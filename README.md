@@ -17,6 +17,8 @@ $myPolicy->hasUsername('ccornutt');
 $result = $enforcer->evaluate($myUser, $myPolicy);
 echo 'RESULT: '.var_export($result, true)."\n\n"; // result is true
 
+// You can also chain the evaluations to make more complex policies
+$myPolicy->hasUsername('ccornutt')->hasPermissions('test1'); // also true
 ?>
 ```
 
