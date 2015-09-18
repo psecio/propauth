@@ -1,6 +1,7 @@
 <?php
 
 namespace Psecio\PropAuth\Test;
+use Psecio\PropAuth\Policy;
 
 class TestString extends \Psecio\PropAuth\Test
 {
