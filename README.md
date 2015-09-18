@@ -5,6 +5,12 @@ Example:
 ```php
 <?php
 
+require_once 'vendor/autoload.php';
+
+use \Psecio\PropAuth\Enforcer;
+use \Psecio\PropAuth\User;
+use \Psecio\PropAuth\Policy;
+
 $enforcer = new Enforcer();
 $myUser = new User([
     'username' => 'ccornutt',
