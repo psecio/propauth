@@ -16,7 +16,8 @@ use \Psecio\PropAuth\Policy;
 $enforcer = new Enforcer();
 $myUser = new User([
     'username' => 'ccornutt',
-    'permissions' => ['test1']
+    'permissions' => ['test1'],
+    'password' => password_hash('test1234', PASSWORD_DEFAULT)
 ]);
 
 $myPolicy = new Policy();
@@ -27,10 +28,33 @@ echo 'RESULT: '.var_export($result, true)."\n\n"; // result is true
 
 // You can also chain the evaluations to make more complex policies
 $myPolicy->hasUsername('ccornutt')->hasPermissions('test1'); // also true
+
 ?>
 ```
 
 > **NOTE:** All matching is treated as *AND* so **all** criteria must be true for the evaluation to pass.
+
+## Verifying passwords
+
+You can also use `PropAuth` to verify passwords as a part of your policy right along with the other evaluations. Here's an example of a policy that would verify the input for the user defined above:
+
+```
+<?php
+
+$username = $_POST['username'];
+$password = $_POST['password'];
+
+$myPolicy = new Policy();
+$myPolicy->hasUsername($username)->passwordEquals($password);
+
+$result = $enforcer->evaluate($myUser, $myPolicy);
+if ($result === true) {
+    echo 'Valid login!';
+}
+?>
+```
+
+The password validation assumes the use of the [password hashing methods](http://php.net/manual/en/ref.password.php) and so requires PHP >=5.5 to function correctly. The plain-text password is given to the policy and hashed internally. Then the values are checked against the ones provided in the user for a match. In this case, if they put in either the wrong username or password, the policy evaluation will fail.
 
 
 ### Creating the User
