@@ -22,6 +22,9 @@ $myPolicy->hasUsername('ccornutt')->hasPermissions('test1'); // also true
 ?>
 ```
 
+> **NOTE:** All matching is treated as *AND* so **all** criteria must be true for the evaluation to pass.
+
+
 ### Creating the User
 
 The `User` class is designed to take in a set of `properties` as an array in the constructor (as seen above). These properties them are used in the evaluation process. The names of the properties are important as they're used for the "magic" has/not checks.
