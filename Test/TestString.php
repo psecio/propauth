@@ -1,44 +1,40 @@
 <?php
 
-class TestString extends Test
+namespace Psecio\PropAuth\Test;
+
+class TestString extends \Psecio\PropAuth\Test
 {
-    public function evaluate($compare)
+    protected function evaluateEquals($value, $compare)
     {
         $test = $this->getTest();
-        $value = $test->getValue();
 
-        if ($test->getType() == 'equals') {
-            if (is_array($value)) {
-                if ($test->getAddl()['rule'] === Policy::ANY) {
-                    return (in_array($compare, $value));
-                } elseif ($test->getAddl()['rule'] === Policy::ALL) {
-                    return $compare == $value;
-                }
-
-            } elseif (is_string($value)) {
-                // Comparing a string to a string
+        if (is_array($value)) {
+            if ($test->getAddl()['rule'] === Policy::ANY) {
+                return (in_array($compare, $value));
+            } elseif ($test->getAddl()['rule'] === Policy::ALL) {
                 return $compare == $value;
             }
-        } elseif ($test->getType() == 'not-equals') {
-            if (is_array($value)) {
-                if ($test->getAddl()['rule'] === Policy::ANY) {
-                    return (!in_array($compare, $value));
-                } elseif ($test->getAddl()['rule'] === Policy::ALL) {
-                    return $compare !== $value;
-                }
 
-            } elseif (is_string($value)) {
-                // Comparing a string to a string
+        } elseif (is_string($value)) {
+            // Comparing a string to a string
+            return $compare == $value;
+        }
+    }
+
+    protected function evaluateNotEquals($value, $compare)
+    {
+        $test = $this->getTest();
+
+        if (is_array($value)) {
+            if ($test->getAddl()['rule'] === Policy::ANY) {
+                return (!in_array($compare, $value));
+            } elseif ($test->getAddl()['rule'] === Policy::ALL) {
                 return $compare !== $value;
             }
-        }
 
-        if ($test->getType() == 'equals' && $compare !== $test->getValue()) {
-            return false;
-        } elseif ($test->getType() == 'not-equals' && $compare == $test->getValue()) {
-            return false;
+        } elseif (is_string($value)) {
+            // Comparing a string to a string
+            return $compare !== $value;
         }
-
-        return true;
     }
 }

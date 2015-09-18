@@ -1,5 +1,7 @@
 <?php
 
+namespace Psecio\PropAuth;
+
 abstract class Test
 {
     protected $test;
@@ -18,5 +20,21 @@ abstract class Test
         return $this->test;
     }
 
-    abstract public function evaluate($value);
+    public function evaluate($compare)
+    {
+        $test = $this->getTest();
+        $value = $test->getValue();
+
+        switch($test->getType()) {
+            case 'equals':
+                return $this->evaluateEquals($value, $compare);
+            case 'not-equals':
+                return $this->evaluateNotEquals($value, $compare);
+        }
+
+        return true;
+    }
+
+    abstract protected function evaluateEquals($value, $compare);
+    abstract protected function evaluateNotEquals($value, $compare);
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace Psecio\PropAuth;
+
 class Enforcer
 {
     public function evaluate(User $subject, Policy $policy)
@@ -12,7 +14,7 @@ class Enforcer
 
             // Ensure all of the things in our policy are true
             foreach ($value as $test) {
-                $typeNs = 'Test'.ucwords(strtolower($valueType));
+                $typeNs = __NAMESPACE__.'\Test\Test'.ucwords(strtolower($valueType));
                 if (class_exists($typeNs)) {
                     $testInstance = new $typeNs($test);
                     if ($testInstance->evaluate($propertyValue) === false) {

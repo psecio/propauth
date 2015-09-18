@@ -1,5 +1,7 @@
 <?php
 
+namespace Psecio\PropAuth;
+
 class User
 {
     protected $properties = [];
