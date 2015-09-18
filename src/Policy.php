@@ -29,6 +29,18 @@ class Policy
         return $this;
     }
 
+    /**
+     * Catch the call to evaluate the password
+     *
+     * @param string $password Plain-text password input
+     * @return \Psecio\PropAuth\Enforcer instance
+     */
+    public function passwordEquals($password)
+    {
+        $this->check('equals', 'password', 'passwordequals', [$password]);
+        return $this;
+    }
+
     private function check($matchType, $type, $name, $args)
     {
     	$value = array_shift($args);
