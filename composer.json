@@ -1,0 +1,25 @@
+{
+    "name":"psecio/propauth",
+    "type":"library",
+    "description":"A library for property-based policy evaluation",
+    "keywords":["property", "policy", "authorization"],
+    "homepage":"https://github.com/psecio/propauth.git",
+    "license":"MIT",
+    "authors":[
+        {
+            "name":"Chris Cornutt",
+            "email":"ccornutt@phpdeveloper.org"
+        }
+    ],
+    "require":{
+        "php":">=5.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Psecio\\PropAuth\\": "src/"
+        }
+    }
+}
