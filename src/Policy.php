@@ -11,7 +11,7 @@ class Policy
     const NONE = 'none';
 
     private $keywords = [
-    	'has', 'not'
+    	'has', 'not', 'can', 'cannot'
     ];
 
     public function __call($name, $args)
@@ -64,6 +64,20 @@ class Policy
     private function hasCheck($type, $name, $args)
     {
     	$this->check('equals', $type, $name, $args);
+    }
+    private function canCheck($type, $name, $args)
+    {
+        if (isset($args[1]) && (is_object($args[1]) && get_class($args[1]) === 'Closure')) {
+            $type = 'closure';
+        }
+        $this->check('equals', $type, $name, $args);
+    }
+    private function cannotCheck($type, $name, $args)
+    {
+        if (isset($args[1]) && (is_object($args[1]) && get_class($args[1]) === 'Closure')) {
+            $type = 'closure';
+        }
+        $this->check('not-equals', $type, $name, $args);
     }
     private function notCheck($type, $name, $args)
     {

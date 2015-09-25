@@ -10,15 +10,14 @@ Example:
 require_once 'vendor/autoload.php';
 
 use \Psecio\PropAuth\Enforcer;
-use \Psecio\PropAuth\User;
 use \Psecio\PropAuth\Policy;
 
 $enforcer = new Enforcer();
-$myUser = new User([
-    'username' => 'ccornutt',
+$myUser = (object)[
+	'username' => 'ccornutt',
     'permissions' => ['test1'],
     'password' => password_hash('test1234', PASSWORD_DEFAULT)
-]);
+];
 
 $myPolicy = new Policy();
 $myPolicy->hasUsername('ccornutt');
@@ -33,6 +32,16 @@ $myPolicy->hasUsername('ccornutt')->hasPermissions('test1'); // also true
 ```
 
 > **NOTE:** All matching is treated as *AND* so **all** criteria must be true for the evaluation to pass.
+
+## Allowed User Types
+
+The PropAuth engine tries several different ways to get information from the user instance (properties) that should accomidate most of the common User class types out there. When checking for a property, the engine will, in this order:
+
+- Look for a public property with the given name
+- Look for a getter with the property name (ex: for "foo" it looks for "getFoo")
+- Look for the "getProperty" method specifically and calls it with the property name
+
+In the first code example, we're just creating a basic class (`stdClass`) and applying public properties so it would match with the first check for public properties.
 
 ## Verifying passwords
 
@@ -55,11 +64,6 @@ if ($result === true) {
 ```
 
 The password validation assumes the use of the [password hashing methods](http://php.net/manual/en/ref.password.php) and so requires PHP >=5.5 to function correctly. The plain-text password is given to the policy and hashed internally. Then the values are checked against the ones provided in the user for a match. In this case, if they put in either the wrong username or password, the policy evaluation will fail.
-
-
-### Creating the User
-
-The `User` class is designed to take in a set of `properties` as an array in the constructor (as seen above). These properties them are used in the evaluation process. The names of the properties are important as they're used for the "magic" has/not checks.
 
 ### How it checks properties
 
@@ -118,4 +122,36 @@ $policy->notPermissions(['test3', 'test5', 'test6'], Policy::ANY);
 $policy->notPermissions(['test4', 'test5'], Policy::ALL);
 ?>
 
+```
+
+### Using Callbacks
+
+If you have some more custom logic that you need to apply, you might want to use the callback handling built into PropAuth. Much like the "has" and "not" of the property checks, there's "can" (result should be true) and "cannot" (result should be false) for callbacks. Here's an example of each:
+
+```php
+<?php
+// Make a user
+$myUser = (object)[
+	'username' => 'ccornutt',
+	'permissions' => ['test1']
+];
+
+// Make a post
+$post = (object)[
+	'title' => 'This is a test post',
+	'id' => 1
+];
+
+$myPolicy = new Policy();
+$myPolicy
+    ->hasUsername(['ccornutt', 'ccornutt1'], Policy::ANY)
+    ->can($post, function($input) {
+		return ($input->id === 1);
+    })
+    ->cannot($post, function($input) {
+		return (strpos($input->title, 'foobar') === false);
+    });
+
+$result = $enforcer->evaluate($myUser, $myPolicy); // result is TRUE
+?>
 ```
