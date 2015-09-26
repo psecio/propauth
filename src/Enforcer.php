@@ -15,19 +15,35 @@ class Enforcer
 
     public function allows($policyName, $subject)
     {
-        if (!isset($this->policySet[$policyName])) {
-            throw new \InvalidArgumentException('Policy name "'.$policyName.'" not found');
+        if (!is_array($policyName)) {
+            $policyName = [$policyName];
         }
-        $result = $this->evaluate($subject, $this->policySet[$policyName]);
-        return ($result === true) ? true : false;
+        foreach ($policyName as $name) {
+            if (!isset($this->policySet[$name])) {
+                throw new \InvalidArgumentException('Policy name "'.$name.'" not found');
+            }
+            $result = $this->evaluate($subject, $this->policySet[$name]);
+            if ($result === false) {
+                return false;
+            }
+        }
+        return true;
     }
     public function denies($policyName, $subject)
     {
-        if (!isset($this->policySet[$policyName])) {
-            throw new \InvalidArgumentException('Policy name "'.$policyName.'" not found');
+        if (!is_array($policyName)) {
+            $policyName = [$policyName];
         }
-        $result = $this->evaluate($subject, $this->policySet[$policyName]);
-        return ($result === false) ? true : false;
+        foreach ($policyName as $name) {
+            if (!isset($this->policySet[$name])) {
+                throw new \InvalidArgumentException('Policy name "'.$name.'" not found');
+            }
+            $result = $this->evaluate($subject, $this->policySet[$name]);
+            if ($result === true) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function evaluate($subject, Policy $policy)
