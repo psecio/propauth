@@ -4,6 +4,32 @@ namespace Psecio\PropAuth;
 
 class Enforcer
 {
+    private $policySet = [];
+
+    public function __construct(\Psecio\PropAuth\PolicySet $policySet = null)
+    {
+        if ($policySet !== null) {
+            $this->policySet = $policySet;
+        }
+    }
+
+    public function allows($policyName, $subject)
+    {
+        if (!isset($this->policySet[$policyName])) {
+            throw new \InvalidArgumentException('Policy name "'.$policyName.'" not found');
+        }
+        $result = $this->evaluate($subject, $this->policySet[$policyName]);
+        return ($result === true) ? true : false;
+    }
+    public function denies($policyName, $subject)
+    {
+        if (!isset($this->policySet[$policyName])) {
+            throw new \InvalidArgumentException('Policy name "'.$policyName.'" not found');
+        }
+        $result = $this->evaluate($subject, $this->policySet[$policyName]);
+        return ($result === false) ? true : false;
+    }
+
     public function evaluate($subject, Policy $policy)
     {
         $pass = true;
