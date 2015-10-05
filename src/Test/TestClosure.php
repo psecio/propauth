@@ -14,9 +14,18 @@ class TestClosure extends \Psecio\PropAuth\Test
 		return ($this->executeClosure($value) === false) ? true : false;
 	}
 
+	/**
+	 * Execute the closure, passing in the additional data as arguments
+	 *
+	 * @param Closure $value Closure to execute
+	 * @return boolean Pass/fail of evaluation
+	 */
 	private function executeClosure($value)
 	{
-		$closure = $this->getTest()->getAddl()[0];
-		return $closure($value);
+		$addl = $this->getAdditional();
+		if (!is_array($addl)) {
+			$addl = [$addl]
+		}
+		return call_user_func_array($value, $addl);
 	}
 }

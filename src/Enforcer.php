@@ -42,7 +42,7 @@ class Enforcer
      * @throws \InvalidArgumentException If policy name is not found
      * @return boolean Pass/fail result of evaluation
      */
-    public function allows($policyName, $subject)
+    public function allows($policyName, $subject, array $addl = array())
     {
         if (!is_array($policyName)) {
             $policyName = [$policyName];
@@ -51,7 +51,7 @@ class Enforcer
             if (!isset($this->policySet[$name])) {
                 throw new \InvalidArgumentException('Policy name "'.$name.'" not found');
             }
-            $result = $this->evaluate($subject, $this->policySet[$name]);
+            $result = $this->evaluate($subject, $this->policySet[$name], $addl);
             if ($result === false) {
                 return false;
             }
@@ -68,7 +68,7 @@ class Enforcer
      * @throws \InvalidArgumentException If policy name is not found
      * @return boolean Pass/fail of evluation
      */
-    public function denies($policyName, $subject)
+    public function denies($policyName, $subject, array $addl = array())
     {
         if (!is_array($policyName)) {
             $policyName = [$policyName];
@@ -77,7 +77,7 @@ class Enforcer
             if (!isset($this->policySet[$name])) {
                 throw new \InvalidArgumentException('Policy name "'.$name.'" not found');
             }
-            $result = $this->evaluate($subject, $this->policySet[$name]);
+            $result = $this->evaluate($subject, $this->policySet[$name], $addl);
             if ($result === true) {
                 return false;
             }
@@ -92,7 +92,7 @@ class Enforcer
      * @param \Psecio\PropAuth\Policy $policy Policy to evaluate
      * @return boolean Pass/fail status of evaluation
      */
-    public function evaluate($subject, Policy $policy)
+    public function evaluate($subject, Policy $policy, array $addl = array())
     {
         $pass = true;
 
@@ -100,7 +100,7 @@ class Enforcer
             $method = 'get'.ucwords(strtolower($type));
             $propertyValue = null;
 
-            if (isset($subject->$type)) {
+            if ($type !== 'closure' && (isset($subject->$type) || $subject->$type !== null)) {
                 $propertyValue = $subject->$type;
             } elseif (method_exists($subject, $method)) {
                 $propertyValue = $subject->$method();
@@ -118,7 +118,7 @@ class Enforcer
                 }
 
                 if (class_exists($typeNs)) {
-                    $testInstance = new $typeNs($test);
+                    $testInstance = new $typeNs($test, $addl);
                     if ($testInstance->evaluate($propertyValue) === false) {
                         return false;
                     }

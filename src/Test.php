@@ -5,10 +5,21 @@ namespace Psecio\PropAuth;
 abstract class Test
 {
     protected $test;
+    protected $addl = array();
 
-    public function __construct($test)
+    public function __construct($test, array $addl = array())
     {
         $this->setTest($test);
+        $this->setAdditional($addl);
+    }
+
+    public function setAdditional(array $addl)
+    {
+        $this->addl = $addl;
+    }
+    public function getAdditional()
+    {
+        return $this->addl;
     }
 
     public function setTest($test)

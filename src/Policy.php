@@ -118,8 +118,9 @@ class Policy
      */
     private function canCheck($type, $name, $args)
     {
-        if (isset($args[1]) && (is_object($args[1]) && get_class($args[1]) === 'Closure')) {
+        if (isset($args[0]) && (is_object($args[0]) && get_class($args[0]) === 'Closure')) {
             $type = 'closure';
+            $args[1] = $args[0];
         }
         $this->check('equals', $type, $name, $args);
     }
@@ -133,8 +134,9 @@ class Policy
      */
     private function cannotCheck($type, $name, $args)
     {
-        if (isset($args[1]) && (is_object($args[1]) && get_class($args[1]) === 'Closure')) {
+        if (isset($args[0]) && (is_object($args[0]) && get_class($args[0]) === 'Closure')) {
             $type = 'closure';
+            $args[1] = $args[0];
         }
         $this->check('not-equals', $type, $name, $args);
     }
