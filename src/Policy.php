@@ -30,6 +30,16 @@ class Policy
     }
 
     /**
+     * Static method to return a new Policy instance
+     *
+     * @return \Psecio\PropAuth\Policy
+     */
+    public static function instance()
+    {
+        return new Policy();
+    }
+
+    /**
      * Catch the call to evaluate the password
      *
      * @param string $password Plain-text password input
