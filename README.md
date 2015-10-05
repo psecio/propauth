@@ -2,7 +2,15 @@
 
 Performing evaluations on credentials for authentication or sets of permissions on users has its limitations. With these things you're restricted to evaluations like "has permission" or "credentials invalid". The goal behind `PropAuth` is to make these evaluations much more flexible and allow you to define reusable *policies* that can be evaluated against the provided user dynamically.
 
-Example:
+## Installation
+
+You can install the library easily with Composer:
+
+```bash
+composer.phar install psecio/propauth
+```
+
+## Examples
 
 ```php
 <?php
@@ -68,7 +76,7 @@ if ($result === true) {
 
 The password validation assumes the use of the [password hashing methods](http://php.net/manual/en/ref.password.php) and so requires PHP >=5.5 to function correctly. The plain-text password is given to the policy and hashed internally. Then the values are checked against the ones provided in the user for a match. In this case, if they put in either the wrong username or password, the policy evaluation will fail.
 
-### How it checks properties
+## How it checks properties
 
 If you'll notice, we've called the `hasUsername` method on the `Policy` above despite it not being defined on the `User` class. This is handled by the `__call` magic method. It then looks for one of two key words: `has` or `not`. It determines which kind of check it needs to perform based on this.
 
@@ -77,7 +85,7 @@ If you'll notice, we've called the `hasUsername` method on the `Policy` above de
 
 This gives you the flexibility to define custom policies based on the properties your user has and does not restrict it down to just a subset required by the object.
 
-### Rules (`ANY` and `ALL`)
+## Rules (`ANY` and `ALL`)
 
 Your checks can have a secone parameter after the value that further customizes the checks that it performs: `Policy::ANY` and `Policy:ALL`. These ahve different meanings based on the data in the property and the data defined. Here's a brief summary:
 
@@ -90,7 +98,7 @@ array              | array           | any match of input with property values |
 
 > **NOTE:** The `Policy::ANY` rule is the default, regardless of data input type. All matches are done as *exactly* equal, even arrays (so if the order of the values is different they won't match).
 
-### Other examples
+## Other examples
 
 **All of the following examples evaluate to `true` based on the defined user.**
 
@@ -127,7 +135,7 @@ $policy->notPermissions(['test4', 'test5'], Policy::ALL);
 
 ```
 
-### Using Callbacks
+## Using Callbacks
 
 If you have some more custom logic that you need to apply, you might want to use the callback handling built into PropAuth. Much like the "has" and "not" of the property checks, there's "can" (result should be true) and "cannot" (result should be false) for callbacks. Here's an example of each:
 
@@ -159,7 +167,7 @@ $result = $enforcer->evaluate($myUser, $myPolicy); // result is TRUE
 ?>
 ```
 
-### Policy Sets
+## Policy Sets
 
 It's also possible to defile a policy in a set, referenced by a key name (string). For example, if we wanted to create a simple policy that let a user with the username "testuser1" be able to perform an "edit post" action:
 
