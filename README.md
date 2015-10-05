@@ -180,6 +180,9 @@ $set->add(
 	Policy::instance()->hasUsername('testuser1')
 );
 
+// Or, using the instance method
+$set = new PolicySet()
+	->add('edit-post', Policy::instance()->hasUsername('testuser1'));
 ?>
 ```
 

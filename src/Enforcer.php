@@ -4,8 +4,28 @@ namespace Psecio\PropAuth;
 
 class Enforcer
 {
+    /**
+     * Set of policies for evluation
+     * @var array
+     */
     private $policySet = [];
 
+    /**
+     * Static method to get a new instance of the Enforcer object
+     *
+     * @param \Psecio\PropAuth\PolicySet|null $policySet Set of policies [optional]
+     * @return \Psecio\PropAuth\Enforcer instance
+     */
+    public function instance(\Psecio\PropAuth\PolicySet $policySet = null)
+    {
+        return new Enforcer($policySet);
+    }
+
+    /**
+     * Init the object, possibly with an optional policy set
+     *
+     * @param \Psecio\PropAuth\PolicySet|null $policySet Set of Policy instances [optional]
+     */
     public function __construct(\Psecio\PropAuth\PolicySet $policySet = null)
     {
         if ($policySet !== null) {
@@ -13,6 +33,15 @@ class Enforcer
         }
     }
 
+    /**
+     * Locate a policy by key name and determine if the subject is allowed
+     *     by matching against its properties
+     *
+     * @param string $policyName Policy name to evaluate
+     * @param object $subject Subject to evaluate against
+     * @throws \InvalidArgumentException If policy name is not found
+     * @return boolean Pass/fail result of evaluation
+     */
     public function allows($policyName, $subject)
     {
         if (!is_array($policyName)) {
@@ -29,6 +58,16 @@ class Enforcer
         }
         return true;
     }
+
+    /**
+     * Locate a policy by name and evaluate if the subject is denied
+     *     by matching against its properties
+     *
+     * @param string $policyName Policy key name
+     * @param object $subject Subject to evluate against
+     * @throws \InvalidArgumentException If policy name is not found
+     * @return boolean Pass/fail of evluation
+     */
     public function denies($policyName, $subject)
     {
         if (!is_array($policyName)) {
@@ -46,6 +85,13 @@ class Enforcer
         return true;
     }
 
+    /**
+     * Given a subject and a policy, evaluate the pass/fail result of the matching
+     *
+     * @param object $subject Subject to match against
+     * @param \Psecio\PropAuth\Policy $policy Policy to evaluate
+     * @return boolean Pass/fail status of evaluation
+     */
     public function evaluate($subject, Policy $policy)
     {
         $pass = true;

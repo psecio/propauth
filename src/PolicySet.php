@@ -7,6 +7,16 @@ class PolicySet implements \ArrayAccess, \Countable, \Iterator
 	private $policies = [];
 	private $position = 0;
 
+	/**
+	 * Static method to fetch a new instance
+	 *
+	 * @return \Psecio\PropAuth\PolicySet
+	 */
+	public static function instance()
+	{
+		return new PolicySet();
+	}
+
 	public function offsetExists($offset)
 	{
 		return isset($this->policies[$offset]);
@@ -52,8 +62,15 @@ class PolicySet implements \ArrayAccess, \Countable, \Iterator
 		return count($this->policies);
 	}
 
+	/**
+	 * Add a new policy to the current set with the given key name
+	 *
+	 * @param string $policyName Policy name (key)
+	 * @param \Psecio\PropAuth\Policy $policy Policy object instance
+	 */
 	public function add($policyName, \Psecio\PropAuth\Policy $policy)
 	{
 		$this->policies[$policyName] = $policy;
+		return $this;
 	}
 }
