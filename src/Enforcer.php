@@ -16,7 +16,7 @@ class Enforcer
      * @param \Psecio\PropAuth\PolicySet|null $policySet Set of policies [optional]
      * @return \Psecio\PropAuth\Enforcer instance
      */
-    public function instance(\Psecio\PropAuth\PolicySet $policySet = null)
+    public static function instance(\Psecio\PropAuth\PolicySet $policySet = null)
     {
         return new Enforcer($policySet);
     }
