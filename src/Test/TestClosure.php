@@ -24,7 +24,7 @@ class TestClosure extends \Psecio\PropAuth\Test
 	{
 		$addl = $this->getAdditional();
 		if (!is_array($addl)) {
-			$addl = [$addl]
+			$addl = [$addl];
 		}
 		return call_user_func_array($value, $addl);
 	}
