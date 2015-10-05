@@ -95,6 +95,7 @@ class Enforcer
     public function evaluate($subject, Policy $policy, array $addl = array())
     {
         $pass = true;
+        $addl = array_merge([$subject], $addl);
 
         foreach ($policy->getChecks() as $type => $value) {
             $method = 'get'.ucwords(strtolower($type));
