@@ -59,6 +59,43 @@ class Policy
     }
 
     /**
+     * Load a policy from a string DSL
+     *     See the README for formatting
+     *
+     * @param string $dslString DSL formatted string
+     */
+    public static function load($dslString)
+    {
+        $policy = self::instance();
+        $parts = explode('||', $dslString);
+
+        foreach ($parts as $match) {
+            $args = [];
+            list($method, $value) = explode(':', $match);
+
+            // if we have data following the ":" inside (), array it
+            if (preg_match('/:\((.+?)\)/', $match, $matches) > 0) {
+                print_r($matches);
+                if (isset($matches[1])) {
+                    $value = explode(',', $matches[1]);
+                }
+            }
+            $args[] = $value;
+
+            // Finally, see if we have a modifier
+            if (preg_match('/\[(.+?)\]$/', $match, $matches) > 0) {
+                if (isset($matches[1])) {
+                    $args[] = strtolower($matches[1]);
+                }
+            }
+
+            call_user_func_array([$policy, $method], $args);
+        }
+
+        return $policy;
+    }
+
+    /**
      * Catch the call to evaluate the password
      *
      * @param string $password Plain-text password input
