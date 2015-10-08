@@ -8,11 +8,12 @@ class TestArray extends \Psecio\PropAuth\Test
     protected function evaluateEquals($value, $compare)
     {
         $test = $this->getTest();
+        $addl = $test->getAddl();
 
         if (is_string($value)) {
-            if ($test['addl']['rule'] === Policy::ANY) {
+            if ($addl['rule'] === Policy::ANY) {
                 return in_array($value, $compare);
-            } elseif ($test['addl']['rule'] === Policy::ALL) {
+            } elseif ($addl['rule'] === Policy::ALL) {
                 // ensure all items match
                 foreach ($compare as $v) {
                     if ($v !== $value) {
@@ -21,14 +22,14 @@ class TestArray extends \Psecio\PropAuth\Test
                 }
             }
         } elseif (is_array($value)) {
-            if ($test['addl']['rule'] === Policy::ANY) {
+            if ($addl['rule'] === Policy::ANY) {
                 // see if any of the values match
                 foreach ($compare as $v) {
                     if ($v == $value) {
                         return true;
                     }
                 }
-            } elseif ($test['addl']['rule'] === Policy::ALL) {
+            } elseif ($addl['rule'] === Policy::ALL) {
                 // see if all values match
                 return $compare == $value;
             }
@@ -38,9 +39,9 @@ class TestArray extends \Psecio\PropAuth\Test
     protected function evaluateNotEquals($value, $compare)
     {
         if (is_string($value)) {
-            if ($test['addl']['rule'] === Policy::ANY) {
+            if ($addl['rule'] === Policy::ANY) {
                 return !in_array($value, $compare);
-            } elseif ($test['addl']['rule'] === Policy::ALL) {
+            } elseif ($addl['rule'] === Policy::ALL) {
                 $fail = false;
                 foreach ($compare as $v) {
                     if ($v == $value && $fail === false) {
@@ -54,7 +55,7 @@ class TestArray extends \Psecio\PropAuth\Test
             return (!in_array($value, $compare));
 
         } elseif (is_array($value)) {
-            if ($test['addl']['rule'] === Policy::ANY) {
+            if ($addl['rule'] === Policy::ANY) {
 
                 // see if any of our values are in the array
                 $fail = false;
@@ -66,7 +67,7 @@ class TestArray extends \Psecio\PropAuth\Test
                 // If we failed, return false
                 return ($fail === true) ? false : true;
 
-            } elseif ($test['addl']['rule'] === Policy::ALL) {
+            } elseif ($addl['rule'] === Policy::ALL) {
                 return $compare !== $value;
             }
         } else {
