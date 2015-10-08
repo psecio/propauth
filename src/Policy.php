@@ -35,6 +35,7 @@ class Policy
     public function __call($name, $args)
     {
     	foreach ($this->keywords as $type) {
+
     		if (strpos($name, $type) === 0) {
     			$func = $type.'Check';
     			if (method_exists($this, $func)) {
@@ -80,7 +81,6 @@ class Policy
     private function check($matchType, $type, $name, $args)
     {
     	$value = array_shift($args);
-        $matchType = 'equals';
 
         if (!isset($args[0])) {
             $args[0] = ['rule' => Policy::ANY];
