@@ -75,7 +75,6 @@ class Policy
 
             // if we have data following the ":" inside (), array it
             if (preg_match('/:\((.+?)\)/', $match, $matches) > 0) {
-                print_r($matches);
                 if (isset($matches[1])) {
                     $value = explode(',', $matches[1]);
                 }
