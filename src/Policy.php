@@ -19,10 +19,18 @@ class Policy
 
     /**
      * Match keywords
-     * @var string
+     * @var array
      */
     private $keywords = [
-    	'has', 'not', 'can', 'cannot'
+    	'has', 'not'
+    ];
+
+    /**
+     * Exact type matches
+     * @var array
+     */
+    private $exact = [
+        'cannot', 'can'
     ];
 
     /**
@@ -35,17 +43,33 @@ class Policy
     public function __call($name, $args)
     {
     	foreach ($this->keywords as $type) {
-
     		if (strpos($name, $type) === 0) {
-    			$func = $type.'Check';
-    			if (method_exists($this, $func)) {
-    				$type = strtolower(str_replace($type, '', $name));
-    				$this->$func($type, $name, $args);
-    			}
+                $this->addCheck($name, $type, $args);
     		}
     	}
+        if (in_array($name, $this->exact)) {
+            $this->addCheck($name, $name, $args);
+        }
 
         return $this;
+    }
+
+    /**
+     * Add a new check to the set
+     *
+     * @param string $name Function name
+     * @param string $type Check type
+     * @param array $args Check arguments
+     */
+    protected function addCheck($name, $type, $args)
+    {
+        $func = $type.'Check';
+        echo "func: ".$func."\n";
+
+        if (method_exists($this, $func)) {
+            $type = strtolower(str_replace($type, '', $name));
+            $this->$func($type, $name, $args);
+        }
     }
 
     /**
@@ -157,6 +181,8 @@ class Policy
         if (isset($args[0]) && (is_object($args[0]) && get_class($args[0]) === 'Closure')) {
             $type = 'closure';
             $args[1] = $args[0];
+        } elseif (is_string($args[0]) && strpos($args[0], '::') !== false) {
+            $type = 'method';
         }
         $this->check('equals', $type, $name, $args);
     }
@@ -170,10 +196,15 @@ class Policy
      */
     private function cannotCheck($type, $name, $args)
     {
+        echo __FUNCTION__."\n";
+
         if (isset($args[0]) && (is_object($args[0]) && get_class($args[0]) === 'Closure')) {
             $type = 'closure';
             $args[1] = $args[0];
+        } elseif (is_string($args[0]) && strpos($args[0], '::') !== false) {
+            $type = 'method';
         }
+
         $this->check('not-equals', $type, $name, $args);
     }
 
