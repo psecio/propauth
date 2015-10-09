@@ -5,6 +5,13 @@ use Psecio\PropAuth\Policy;
 
 class TestString extends \Psecio\PropAuth\Test
 {
+    /**
+     * Evaluate that the method result is true (not equals)
+     *
+     * @param string $value Value for evaluation
+     * @param string $compare Value to compare against
+     * @return boolean Pass/fail result of test (method result)
+     */
     protected function evaluateEquals($value, $compare)
     {
         $test = $this->getTest();
@@ -22,6 +29,13 @@ class TestString extends \Psecio\PropAuth\Test
         }
     }
 
+    /**
+     * Evaluate that the method result is false (not equals)
+     *
+     * @param string $value Value for evaluation
+     * @param string $compare Value to compare against
+     * @return boolean Pass/fail result of test (method result)
+     */
     protected function evaluateNotEquals($value, $compare)
     {
         $test = $this->getTest();

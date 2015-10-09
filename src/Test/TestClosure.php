@@ -5,10 +5,25 @@ use Psecio\PropAuth\Policy;
 
 class TestClosure extends \Psecio\PropAuth\Test
 {
+	/**
+	 * Evaluate that the method result is true (not equals)
+	 *
+	 * @param string $value Value for evaluation
+	 * @param string $compare Value to compare against
+	 * @return boolean Pass/fail result of test (method result)
+	 */
 	protected function evaluateEquals($value, $compare)
 	{
 		return ($this->executeClosure($value) === true) ? true : false;
 	}
+
+	/**
+	 * Evaluate that the method result is false (not equals)
+	 *
+	 * @param string $value Value for evaluation
+	 * @param string $compare Value to compare against
+	 * @return boolean Pass/fail result of test (method result)
+	 */
 	protected function evaluateNotEquals($value, $compare)
 	{
 		return ($this->executeClosure($value) === false) ? true : false;

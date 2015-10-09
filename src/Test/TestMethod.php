@@ -6,7 +6,7 @@ use Psecio\PropAuth\Policy;
 class TestMethod extends \Psecio\PropAuth\Test
 {
 	/**
-	 * Evaluate that the method result is false (not equals)
+	 * Evaluate that the method result is true (not equals)
 	 *
 	 * @param string $value Value for evaluation
 	 * @param string $compare Value to compare against
