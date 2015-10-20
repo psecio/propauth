@@ -64,7 +64,6 @@ class Policy
     protected function addCheck($name, $type, $args)
     {
         $func = $type.'Check';
-        echo "func: ".$func."\n";
 
         if (method_exists($this, $func)) {
             $type = strtolower(str_replace($type, '', $name));
