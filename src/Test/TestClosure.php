@@ -2,6 +2,7 @@
 
 namespace Psecio\PropAuth\Test;
 use Psecio\PropAuth\Policy;
+use \Psecio\PropAuth\Exception\MissingParametersException;
 
 class TestClosure extends \Psecio\PropAuth\Test
 {
@@ -33,6 +34,7 @@ class TestClosure extends \Psecio\PropAuth\Test
 	 * Execute the closure, passing in the additional data as arguments
 	 *
 	 * @param Closure $value Closure to execute
+	 * @throws \Psecio\PropAuth\Exception\MissingParametersException If not enough params were given for the closure
 	 * @return boolean Pass/fail of evaluation
 	 */
 	private function executeClosure($value)
@@ -41,6 +43,14 @@ class TestClosure extends \Psecio\PropAuth\Test
 		if (!is_array($addl)) {
 			$addl = [$addl];
 		}
+		// Inspect the closure and ensure we have enough parameters
+		$info = new \ReflectionFunction($value);
+		$required = $info->getNumberOfParameters();
+		if (count($addl) < $required) {
+			// Here we subtract 1 because the first param (subject) is forcefully injected
+			throw new MissingParametersException('Not enough parameters provided for the check. ('.($required-1).' required)');
+		}
+
 		return call_user_func_array($value, $addl);
 	}
 }
