@@ -195,8 +195,6 @@ class Policy
      */
     private function cannotCheck($type, $name, $args)
     {
-        echo __FUNCTION__."\n";
-
         if (isset($args[0]) && (is_object($args[0]) && get_class($args[0]) === 'Closure')) {
             $type = 'closure';
             $args[1] = $args[0];
