@@ -97,7 +97,12 @@ class Enforcer
         $pass = true;
         $addl = array_merge([$subject], $addl);
 
-        foreach ($policy->getChecks() as $type => $value) {
+        $checks = $policy->getChecks();
+        if (empty($checks)) {
+            trigger_error('Policy evaluation was perfomed with no checks', E_USER_WARNING);
+        }
+
+        foreach ($checks as $type => $value) {
             $method = 'get'.ucwords(strtolower($type));
             $propertyValue = null;
 
@@ -108,6 +113,11 @@ class Enforcer
             } elseif (method_exists($subject, 'getProperty')) {
                 $propertyValue = $subject->getProperty($type);
             }
+
+            if ($propertyValue == null) {
+                throw new \InvalidArgumentException('Invalid property value for "'.$type.'"!');
+            }
+
             $valueType = gettype($propertyValue);
 
             // Ensure all of the things in our policy are true
