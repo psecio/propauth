@@ -33,4 +33,21 @@ class TestClosureTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($test->evaluate($data));
     }
+
+    /**
+     * Expect an exception when not enough paramters are provided
+     *
+     * @expectedException \Psecio\PropAuth\Exception\MissingParametersException
+     */
+    public function testEqualsNotEnoughParams()
+    {
+        $data = 'testing1234';
+        $check = new Check(
+            'equals',
+            function($value) use ($data) { return ($data == $value); }
+        );
+        $test = new TestClosure($check, []);
+
+        $this->assertTrue($test->evaluate($data));
+    }
 }
