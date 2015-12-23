@@ -20,6 +20,8 @@ class TestArray extends \Psecio\PropAuth\Test
                         return false;
                     }
                 }
+                // All passed!
+                return true;
             }
         } elseif (is_array($value)) {
             if ($addl['rule'] === Policy::ANY) {

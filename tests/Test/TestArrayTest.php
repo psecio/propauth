@@ -8,25 +8,23 @@ class TestTestArray extends \PHPUnit_Framework_TestCase
     public function checkProvider()
     {
         return [
-            // --- EQUALS -----
-            // ANY match on string from array
-            ['equals', 'foo', ['foo', 'bar'], Policy::ANY, true],
-             // No match with ANY in array values
-            ['equals', 'nomatch', ['foo', 'bar'], Policy::ANY, false],
-             // ANY match where at least one value is in array
-            ['equals', ['foo'], ['foo', 'bar'], Policy::ANY, true],
-             // No match with ANY, no value exists in array
-            ['equals', ['nomatch'], ['foo', 'bar'], Policy::ANY, false],
+            // --- EQUALS, ANY -----
+            'equals-string-any-match' => ['equals', 'foo', ['foo', 'bar'], Policy::ANY, true],
+            'equals-string-any-nomatch' => ['equals', 'nomatch', ['foo', 'bar'], Policy::ANY, false],
+            'equals-array-any-match' => ['equals', ['foo'], ['foo', 'bar'], Policy::ANY, true],
+            'equals-array-any-nomatch' => ['equals', ['nomatch'], ['foo', 'bar'], Policy::ANY, false],
 
-            // --- NOT EQUALS -----
-            // ANY match, value not found, string
-            ['not-equals', 'baz', ['foo', 'bar'], Policy::ANY, true],
-            // ANY match, value is found, string
-            ['not-equals', 'foo', ['foo', 'bar'], Policy::ANY, false],
-            // ANY match, value not found, string
-            ['not-equals', ['baz'], ['foo', 'bar'], Policy::ANY, true],
-            // ANY match, value is found, string
-            ['not-equals', ['foo'], ['foo', 'bar'], Policy::ANY, false],
+            // --- NOT EQUALS, ANY -----
+            'notequals-string-any-match' => ['not-equals', 'baz', ['foo', 'bar'], Policy::ANY, true],
+            'notequals-string-any-nomatch' => ['not-equals', 'foo', ['foo', 'bar'], Policy::ANY, false],
+            'notequals-array-any-match' => ['not-equals', ['baz'], ['foo', 'bar'], Policy::ANY, true],
+            'notequals-array-any-nomatch' => ['not-equals', ['foo'], ['foo', 'bar'], Policy::ANY, false],
+
+            // --- EQUALS, ALL -----
+            'equals-string-all-match' => ['equals', 'foo', ['foo', 'foo'], Policy::ALL, true],
+            'equals-string-all-nomatch' => ['equals', 'bar', ['foo', 'foo'], Policy::ALL, false],
+            'notequals-array-all-nomatch' => ['equals', ['foo'], ['foo', 'foo'], Policy::ALL, true],
+            'notequals-array-all-nomatch' => ['equals', ['bar'], ['foo', 'foo'], Policy::ALL, false],
         ];
     }
 
