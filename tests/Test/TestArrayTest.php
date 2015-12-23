@@ -3,7 +3,7 @@ namespace Psecio\PropAuth\Test;
 use Psecio\PropAuth\Check;
 use Psecio\PropAuth\Policy;
 
-class TestTestArray extends \PHPUnit_Framework_TestCase
+class TestArrayTest extends \PHPUnit_Framework_TestCase
 {
     public function checkProvider()
     {
@@ -23,8 +23,18 @@ class TestTestArray extends \PHPUnit_Framework_TestCase
             // --- EQUALS, ALL -----
             'equals-string-all-match' => ['equals', 'foo', ['foo', 'foo'], Policy::ALL, true],
             'equals-string-all-nomatch' => ['equals', 'bar', ['foo', 'foo'], Policy::ALL, false],
+            'equals-array-all-match' => ['equals', ['foo', 'foo'], ['foo', 'foo'], Policy::ALL, true],
+            'equals-array-all-nomatch' => ['equals', ['bar'], ['foo', 'foo'], Policy::ALL, false],
+
+            // --- NOT EQUALS, ALL -----
+            'notequals-string-all-match' => ['not-equals', 'foo', ['foo', 'foo'], Policy::ALL, false],
+            'notequals-string-all-nomatch' => ['not-equals', 'bar', ['foo', 'foo'], Policy::ALL, true],
             'notequals-array-all-match' => ['not-equals', ['foo', 'foo'], ['foo', 'foo'], Policy::ALL, false],
             'notequals-array-all-nomatch' => ['not-equals', ['bar'], ['foo', 'foo'], Policy::ALL, true],
+
+            // Oddities...
+            'notequals-string-all-nomatch-nopolicy' => ['not-equals', 'bar', ['foo', 'foo'], null, true],
+            'notequals-array-all-nomatch-nopolicy' => ['not-equals', new \stdClass(), ['foo', 'foo'], null, true],
         ];
     }
 

@@ -78,7 +78,7 @@ class TestArray extends \Psecio\PropAuth\Test
                 return $compare !== $value;
             }
         } else {
-            return $check['value'] !== $compare;
+            return $check->getValue() !== $compare;
         }
     }
 }
