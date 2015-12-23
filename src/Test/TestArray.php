@@ -7,8 +7,8 @@ class TestArray extends \Psecio\PropAuth\Test
 {
     protected function evaluateEquals($value, $compare)
     {
-        $test = $this->getTest();
-        $addl = $test->getAddl();
+        $check = $this->getTest();
+        $addl = $check->getAddl();
 
         if (is_string($value)) {
             if ($addl['rule'] === Policy::ANY) {
@@ -25,26 +25,31 @@ class TestArray extends \Psecio\PropAuth\Test
             if ($addl['rule'] === Policy::ANY) {
                 // see if any of the values match
                 foreach ($compare as $v) {
-                    if ($v == $value) {
+                    if (in_array($v, $value) === true) {
                         return true;
                     }
                 }
             } elseif ($addl['rule'] === Policy::ALL) {
                 // see if all values match
-                return $compare == $value;
+                return $compare === $value;
             }
         }
+
+        return false;
     }
 
     protected function evaluateNotEquals($value, $compare)
     {
+        $check = $this->getTest();
+        $addl = $check->getAddl();
+
         if (is_string($value)) {
             if ($addl['rule'] === Policy::ANY) {
                 return !in_array($value, $compare);
             } elseif ($addl['rule'] === Policy::ALL) {
                 $fail = false;
                 foreach ($compare as $v) {
-                    if ($v == $value && $fail === false) {
+                    if ($v === $value && $fail === false) {
                         $fail = true;
                     }
                 }
@@ -71,7 +76,7 @@ class TestArray extends \Psecio\PropAuth\Test
                 return $compare !== $value;
             }
         } else {
-            return $test['value'] !== $compare;
+            return $check['value'] !== $compare;
         }
     }
 }
