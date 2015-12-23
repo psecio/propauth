@@ -23,8 +23,8 @@ class TestTestArray extends \PHPUnit_Framework_TestCase
             // --- EQUALS, ALL -----
             'equals-string-all-match' => ['equals', 'foo', ['foo', 'foo'], Policy::ALL, true],
             'equals-string-all-nomatch' => ['equals', 'bar', ['foo', 'foo'], Policy::ALL, false],
-            'notequals-array-all-nomatch' => ['equals', ['foo'], ['foo', 'foo'], Policy::ALL, true],
-            'notequals-array-all-nomatch' => ['equals', ['bar'], ['foo', 'foo'], Policy::ALL, false],
+            'notequals-array-all-match' => ['not-equals', ['foo', 'foo'], ['foo', 'foo'], Policy::ALL, false],
+            'notequals-array-all-nomatch' => ['not-equals', ['bar'], ['foo', 'foo'], Policy::ALL, true],
         ];
     }
 
