@@ -15,7 +15,7 @@ class Gateway
         $this->subject = ($subject instanceof Subject) ? $subject : new Subject($subject);
         $this->policies = new PolicySet();
 
-        if ($context->get('policies') !== null) {
+        if ($context !== null && $context->get('policies') !== null) {
             $this->setupPolicies($context->get('policies'));
         }
     }
