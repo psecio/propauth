@@ -269,3 +269,53 @@ Simple right? Okay, so lets look at the format:
 - modifiers (like `ANY` or `ALL`) are added to the end of the method/value pair, enclosed in brackets (`[]`)
 
 Obviously this is only really for simpler checks where the criteria can be defined by strings and simple values, but it can be quite useful for a wide range of circumstances. Of course, you can always pull these as base policies and then add on to them manually once you have the `Policy` object created post-load.
+
+## Using the Gateway interface for evaluation
+
+In addition to the powerful features already listed here, the `PropAuth` library also provides a simplified interface for working with your user (subject) and its authentication and authorization.
+
+First, let's take a look at authentication. It uses a `bcrypt` hashing method behind the scenes to evaluate the password:
+
+```php
+<?php
+$myUser = (object)[
+    'username' => 'ccornutt',
+    'password' => password_hash('test1234', PASSWORD_DEFAULT)
+];
+
+$gate = new Gateway($myUser, $context);
+$subject = $gate->authenticate($password);
+
+// Then we can check if the user is authenticated
+echo 'Is authenticated? '.var_export($subject->isAuthed(), true)."\n";
+
+?>
+```
+
+We create the `Gateway` class instance and then can call the `authenticate` method on it with the password provided. The script then assumes it can access the user's `password` property as a value on the object and makes a comparison. It will return a new instance of a `Subject` class if the authentication is successful or `false` if not. The `Subject` class is just a wrapper around your object (`$myUser` in this case). The original object can be fetched using the `Subject->getSubject()` method.
+
+Additionally, you can provide a bit more context and use the `Gateway` interface for policy evaluation too. You simply define the policies as a part of the `Context` object in the constructor:
+
+```php
+<?php
+$context = new Context([
+	'policies' => [
+		'policy1' => Policy::instance()->hasUsername('ccornutt')
+	]
+]);
+$gate = new Gateway($myUser, $context);
+
+// When we can call the "evaluate" method with the policies we want to check:
+if ($gate->evaluate('policy1') === true) {
+	echo 'Policy1 passes!';
+}
+
+// Or you can just add your own PolicySet instance and use "evaluate" the same way
+$myPolicySet = new PolicySet()->add('edit-post', Policy::instance()->hasUsername('testuser1'));
+
+$context = new Context([
+	'policies' => $myPolicySet
+]);
+
+?>
+```
