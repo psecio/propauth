@@ -42,8 +42,7 @@ abstract class Test
             case 'not-equals':
                 return $this->evaluateNotEquals($value, $compare);
         }
-
-        return true;
+        throw new \InvalidArgumentException('Type "'.$test->getType().'" is invalid!');
     }
 
     abstract protected function evaluateEquals($value, $compare);
