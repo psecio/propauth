@@ -40,9 +40,7 @@ class TestClosure extends \Psecio\PropAuth\Test
 	private function executeClosure($value)
 	{
 		$addl = $this->getAdditional();
-		if (!is_array($addl)) {
-			$addl = [$addl];
-		}
+
 		// Inspect the closure and ensure we have enough parameters
 		$info = new \ReflectionFunction($value);
 		$required = $info->getNumberOfParameters();
