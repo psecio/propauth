@@ -353,7 +353,7 @@ $post = (object)[
 	'author' => 'ccornutt'
 ];
 $set = PolicySet::instance()->add(
-    'can-delete',
+    'delete',
     Policy::instance()->can(function($subject, $post) {
         return ($subject->username == 'ccornutt' && $post->author == 'ccornutt');
     })
