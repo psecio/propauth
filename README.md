@@ -283,7 +283,7 @@ $myUser = (object)[
     'password' => password_hash('test1234', PASSWORD_DEFAULT)
 ];
 
-$gate = new Gateway($myUser, $context);
+$gate = new Gateway($myUser);
 $subject = $gate->authenticate($password);
 
 // Then we can check if the user is authenticated
@@ -319,3 +319,30 @@ $context = new Context([
 
 ?>
 ```
+
+Once you have your valid `Subject` instance, you can then check its abilities with the `can` and `cannot` methods:
+
+```php
+<?php
+$myUser = (object)[
+    'username' => 'ccornutt',
+    'password' => password_hash('test1234', PASSWORD_DEFAULT)
+];
+
+$context = new Context([
+	'policies' => [
+		'policy1' => Policy::instance()->hasUsername('ccornutt')
+	]
+]);
+
+$gate = new Gateway($myUser, $context);
+$subject = $gate->authenticate($password);
+
+if ($subject !== false && $subject->can('policy1') === true) {
+	echo 'They can, woo!';
+}
+
+?>
+```
+
+The parameter on the `can` and `cannot` methods are policy names you've already defined in your context.

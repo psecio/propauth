@@ -40,6 +40,7 @@ class Gateway
         $result = $auth->evaluate();
         if ($result === true) {
             $this->subject->setAuth(true);
+            $this->subject->setPolicies($this->policies);
             return $this->subject;
         }
         return false;
