@@ -46,7 +46,7 @@ $myPolicy = Policy::instance()->hasUser('ccornutt')->hasPermissions('test1');
 
 ## Allowed User Types
 
-The PropAuth engine tries several different ways to get information from the user instance (properties) that should accomidate most of the common User class types out there. When checking for a property, the engine will, in this order:
+The PropAuth engine tries several different ways to get information from the user instance (properties) that should accommodate most of the common User class types out there. When checking for a property, the engine will, in this order:
 
 - Look for a public property with the given name
 - Look for a getter with the property name (ex: for "foo" it looks for "getFoo")
@@ -58,7 +58,7 @@ In the first code example, we're just creating a basic class (`stdClass`) and ap
 
 You can also use `PropAuth` to verify passwords as a part of your policy right along with the other evaluations. Here's an example of a policy that would verify the input for the user defined above:
 
-```
+```php
 <?php
 $myUser = (object)[
     'username' => 'ccornutt',
@@ -71,6 +71,8 @@ $subject = $gate->authenticate($password);
 if ($subject !== false && $subject->can('policy1') === true) {
 	echo 'They can, woo!';
 }
+
+?>
 ```
 
 The password validation assumes the use of the [password hashing methods](http://php.net/manual/en/ref.password.php) and so requires PHP >=5.5 to function correctly. The plain-text password is given to the policy and hashed internally. Then the values are checked against the ones provided in the user for a match. In this case, if they put in either the wrong username or password, the policy evaluation will fail.
@@ -86,7 +88,7 @@ This gives you the flexibility to define custom policies based on the properties
 
 ## Rules (`ANY` and `ALL`)
 
-Your checks can have a secone parameter after the value that further customizes the checks that it performs: `Policy::ANY` and `Policy:ALL`. These ahve different meanings based on the data in the property and the data defined. Here's a brief summary:
+Your checks can have a second parameter after the value that further customizes the checks that it performs: `Policy::ANY` and `Policy:ALL`. These have different meanings based on the data in the property and the data defined. Here's a brief summary:
 
 Property data type | Input Data type | ANY                                     | ALL
 ------------------ | --------------- | --------------------------------------- | -----------------------------------------------
@@ -117,7 +119,7 @@ $policy->hasPermissions('test1');
 // Check to see if any permissions match
 $policy->hasPermissions(['test3', 'test2', 'test5'], Policy::ANY);
 
-// Check to see that the pemrissions match exactly
+// Check to see that the permissions match exactly
 $policy->hasPermissions(['test1', 'test2'], Policy::ALL);
 
 #### NEGATIVE CHECKS
@@ -166,7 +168,7 @@ $result = $enforcer->evaluate($myUser, $myPolicy, [ $post ]); // result is TRUE
 ?>
 ```
 
-> **NOTE:** The additional parameters that are passed in to the `evaluate` method will be given to the closure check types in the same order they're given in the array. However, the first paramater will *always* be the subject (User) being evaluated.
+> **NOTE:** The additional parameters that are passed in to the `evaluate` method will be given to the closure check types in the same order they're given in the array. However, the first parameter will *always* be the subject (User) being evaluated.
 
 ## Policy Sets
 
@@ -206,7 +208,7 @@ if ($enforcer->allows('edit-post', $myUser) === true) {
 
 ## Using a Class & Method for Evaluation
 
-You can also use a class and method for evaluation as a part of `can` and `cannot` checks similar to how the closures work. Instead of passing in the closure method like in the previous examples, you simply pass in a string with the class and method names seperated by a double colon (`::`). For example:
+You can also use a class and method for evaluation as a part of `can` and `cannot` checks similar to how the closures work. Instead of passing in the closure method like in the previous examples, you simply pass in a string with the class and method names separated by a double colon (`::`). For example:
 
 ```
 <?php
