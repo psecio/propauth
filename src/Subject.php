@@ -45,23 +45,29 @@ class Subject
         $this->policies = $policySet;
     }
 
-    public function can($policyName)
+    public function can($policyName, $addl = null)
     {
+        if ($addl !== null) {
+            $addl = (!is_array($addl)) ? [$addl] : $addl;
+        }
         $policy = $this->policies[$policyName];
         if ($policy === null) {
             throw new \InvalidArgumentException('Invalid policy name: '.$policyName);
         }
         $enforcer = new Enforcer();
-        return $enforcer->evaluate($this->subject, $policy);
+        return $enforcer->evaluate($this->subject, $policy, $addl);
     }
 
-    public function cannot($policyName)
+    public function cannot($policyName, $addl = null)
     {
+        if ($addl !== null) {
+            $addl = (!is_array($addl)) ? [$addl] : $addl;
+        }
         $policy = $this->policies[$policyName];
         if ($policy === null) {
             throw new \InvalidArgumentException('Invalid policy name: '.$policyName);
         }
         $enforcer = new Enforcer();
-        return !($enforcer->evaluate($this->subject, $policy));
+        return !($enforcer->evaluate($this->subject, $policy, $addl));
     }
 }

@@ -114,7 +114,7 @@ class Enforcer
                 $propertyValue = $subject->getProperty($type);
             }
 
-            if ($propertyValue == null) {
+            if ($propertyValue == null && $type !== 'closure') {
                 throw new \InvalidArgumentException('Invalid property value for "'.$type.'"!');
             }
 

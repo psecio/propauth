@@ -345,4 +345,26 @@ if ($subject !== false && $subject->can('policy1') === true) {
 ?>
 ```
 
-The parameter on the `can` and `cannot` methods are policy names you've already defined in your context.
+The parameter on the `can` and `cannot` methods are policy names you've already defined in your context. If the `Policy` is defined as a closure with more complex logic, you can provide this option (or multiple options) as the second parameter:
+
+```php
+<?php
+$post = (object)[
+	'author' => 'ccornutt'
+];
+$set = PolicySet::instance()->add(
+    'can-delete',
+    Policy::instance()->can(function($subject, $post) {
+        return ($subject->username == 'ccornutt' && $post->author == 'ccornutt');
+    })
+);
+$context = new Context(['policies' => $set]);
+$gate = new Gateway($myUser, $context);
+
+$subject = $gate->authenticate('test1234');
+
+if ($subject->can('delete', $post) === true) {
+	echo 'They can delete it!';
+}
+?>
+```
