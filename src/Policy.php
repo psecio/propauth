@@ -60,6 +60,7 @@ class Policy
      * @param string $name Function name
      * @param string $type Check type
      * @param array $args Check arguments
+     * @throws \InvalidArgumentException If check type is invalid
      */
     protected function addCheck($name, $type, $args)
     {
@@ -68,6 +69,8 @@ class Policy
         if (method_exists($this, $func)) {
             $type = strtolower(str_replace($type, '', $name));
             $this->$func($type, $name, $args);
+        } else {
+          throw new \InvalidArgumentException('Invalid check type: '.$type);
         }
     }
 
