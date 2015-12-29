@@ -46,17 +46,33 @@ class Gateway
         return false;
     }
 
-    public function evaluate($policyName = null)
+    public function evaluate($policyName = null, $type = Policy::ANY)
     {
-        // Find the policy by name
-        $policy = $this->policies[$policyName];
-        if ($policy === null) {
-            throw new \InvalidArgumentException('Invalid policy: '.$policyName);
-        }
         if ($this->subject->isAuthed() === false) {
             throw new \InvalidArgumentException('You cannot perform policy evaluations on a non-authenticated subject.');
         }
         $enforcer = new Enforcer();
-        return $enforcer->evaluate($this->subject, $policy);
+
+        if ($policyName !== null) {
+            // Find the policy by name
+            $policy = $this->policies[$policyName];
+            if ($policy === null) {
+                throw new \InvalidArgumentException('Invalid policy: '.$policyName);
+            }
+            return $enforcer->evaluate($this->subject, $policy);
+        } else {
+            // evaluate all policies and combine using the type
+            foreach ($this->policies as $policy) {
+                $result = $enforcer->evaluate($this->subject, $policy);
+                if ($type === Policy::ANY && $result === true) {
+                    return true;
+                }
+                if ($type === Policy::ALL && $result === false) {
+                    // Just one didn't pass, fail out
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

@@ -98,4 +98,26 @@ class GatewayTest extends \PHPUnit_Framework_TestCase
         $result = $gateway->evaluate('policy1');
         $this->assertTrue($result);
     }
+
+    /**
+     * Test the evaluation of all policies when no policy name is given
+     */
+    public function testAllPolicyEvaluateAllAny()
+    {
+        $set = PolicySet::instance()->add('policy1', Policy::instance()->hasUsername('ccornutt'));
+
+        $user = (object)['username' => 'ccornutt'];
+        $subject = new Subject($user);
+        $subject->setAuth(true);
+
+        $context = new Context([
+            'policies' => $set
+        ]);
+        $gateway = new Gateway($subject, $context);
+
+        // Evaluate the result of the policy above, true because they're:
+        //  1. set correctly, 2. policy passes
+        $result = $gateway->evaluate();
+        $this->assertTrue($result);
+    }
 }
