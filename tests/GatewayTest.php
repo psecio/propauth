@@ -75,4 +75,27 @@ class GatewayTest extends \PHPUnit_Framework_TestCase
         $result = $gateway->authenticate($password);
         $this->assertInstanceOf('\Psecio\PropAuth\Subject', $result);
     }
+
+    /**
+     * Evaluate that things work correctly when a set is passed in, not
+     * 	just an individual policy
+     */
+    public function testPolicySetupWithSet()
+    {
+        $set = PolicySet::instance()->add('policy1', Policy::instance()->hasUsername('ccornutt'));
+
+        $user = (object)['username' => 'ccornutt'];
+        $subject = new Subject($user);
+        $subject->setAuth(true);
+
+        $context = new Context([
+            'policies' => $set
+        ]);
+        $gateway = new Gateway($subject, $context);
+
+        // Evaluate the result of the policy above, true because they're:
+        //  1. set correctly, 2. policy passes
+        $result = $gateway->evaluate('policy1');
+        $this->assertTrue($result);
+    }
 }
