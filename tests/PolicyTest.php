@@ -104,4 +104,26 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
     $addl = $checks['username'][0]->getAddl();
     $this->assertEquals($addl['rule'], Policy::ALL);
   }
+
+  /**
+   * Test the loading of a policy stright and the resulting
+   * 	policy set and objects
+   */
+  public function testLoadFromString()
+  {
+      $string = 'hasUsername:ccornutt||notUsername:ccornutt1||hasPermissions:(test1,test2)[ANY]';
+
+      $policy = Policy::load($string);
+      $checks = $policy->getChecks();
+
+      // Ensure they were both set
+      $this->assertTrue(isset($checks['username']) && isset($checks['permissions']));
+
+      // Vreify the checks are set correctly
+      $ptest1 = Policy::instance()->hasUserName('ccornutt');
+      $this->assertEquals($checks['username'][0], $ptest1->getChecks()['username'][0]);
+
+      $ptest2 = Policy::instance()->hasPermissions(['test1', 'test2'], Policy::ANY);
+      $this->assertEquals($checks['permissions'][0], $ptest2->getChecks()['permissions'][0]);
+  }
 }
