@@ -142,18 +142,18 @@ class Policy
      */
     private function check($matchType, $type, $name, $args)
     {
-    	$value = array_shift($args);
+        $value = array_shift($args);
 
         if (!isset($args[0])) {
-            $args[0] = ['rule' => Policy::ANY];
+          $args[0] = ['rule' => Policy::ANY];
         }
 
         // see what other options we've been given
         if (is_string($args[0]) && ($args[0] === Policy::ANY || $args[0] === Policy::ALL) ) {
-            $args['rule'] = $args[0];
-            unset($args[0]);
+          $args['rule'] = $args[0];
+          unset($args[0]);
         } elseif (is_array($args[0])) {
-            $args = $args[0];
+          $args = $args[0];
         }
 
         $this->checks[$type][] = new Check($matchType, $value, $args);
