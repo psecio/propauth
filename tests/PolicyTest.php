@@ -108,6 +108,8 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
   /**
    * Test the loading of a policy stright and the resulting
    * 	policy set and objects
+   *
+   * @covers \Psecio\PropAuth\Policy::load
    */
   public function testLoadFromString()
   {
@@ -125,5 +127,14 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
 
       $ptest2 = Policy::instance()->hasPermissions(['test1', 'test2'], Policy::ANY);
       $this->assertEquals($checks['permissions'][0], $ptest2->getChecks()['permissions'][0]);
+  }
+
+  /**
+   * Test the creation of a new Policy object with the instance method
+   */
+  public function testCreateNewInstance()
+  {
+      $policy = Policy::instance();
+      $this->assertInstanceOf('\Psecio\PropAuth\Policy', $policy);
   }
 }
