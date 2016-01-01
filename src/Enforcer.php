@@ -90,11 +90,11 @@ class Enforcer
      *
      * @param object $subject Subject to match against
      * @param \Psecio\PropAuth\Policy $policy Policy to evaluate
+     * @throws \InvalidArgumentException If the property value is invalid (null)
      * @return boolean Pass/fail status of evaluation
      */
     public function evaluate($subject, Policy $policy, array $addl = array())
     {
-        $pass = true;
         $addl = array_merge([$subject], $addl);
 
         $checks = $policy->getChecks();
@@ -103,41 +103,76 @@ class Enforcer
         }
 
         foreach ($checks as $type => $value) {
-            $method = 'get'.ucwords(strtolower($type));
-            $propertyValue = null;
-
-            if (($type !== 'closure' && $type !== 'method') && (isset($subject->$type) || $subject->$type !== null)) {
-                $propertyValue = $subject->$type;
-            } elseif (method_exists($subject, $method)) {
-                $propertyValue = $subject->$method();
-            } elseif (method_exists($subject, 'getProperty')) {
-                $propertyValue = $subject->getProperty($type);
-            }
+            $propertyValue = $this->getPropertyValue($type, $subject);
 
             if ($propertyValue == null && $type !== 'closure') {
                 throw new \InvalidArgumentException('Invalid property value for "'.$type.'"!');
             }
 
-            $valueType = gettype($propertyValue);
+            $result = $this->executeTests($value, $type, $propertyValue, $addl);
 
-            // Ensure all of the things in our policy are true
-            foreach ($value as $test) {
-                // First check for a custom "tester"
-                $typeNs = __NAMESPACE__.'\Test\Test'.ucwords(strtolower($type));
-                if (!class_exists($typeNs)) {
-                    $typeNs = __NAMESPACE__.'\Test\Test'.ucwords(strtolower($valueType));
-                }
-
-                if (class_exists($typeNs)) {
-                    $testInstance = new $typeNs($test, $addl);
-                    if ($testInstance->evaluate($propertyValue) === false) {
-                        return false;
-                    }
-                } else {
-                    throw new \InvalidArgumentException('Test type "'.$valueType.'" does not exist.');
-                }
+            // If we have a failure, return false...
+            if ($result === false) {
+                return false;
             }
         }
-        return $pass;
+        return true;
+    }
+
+    /**
+     * Execute the tests on the policy to ensure they match/pass
+     *
+     * @param array $tests A set of Check instances to evaluate
+     * @param string $type Type of tests to evaluate with
+     * @param string $propertyValue Value to evaluate against
+     * @param array $addl Additional values to pass through to the test
+     * @throws \InvalidArgumentException If the type of test (class) does not exist
+     * @return boolean Pass/fail status of the evaluation (if exception not thrown)
+     */
+    public function executeTests($tests, $type, $propertyValue, $addl)
+    {
+        $valueType = gettype($propertyValue);
+
+        // Ensure all of the things in our policy are true
+        foreach ($tests as $test) {
+            // First check for a custom "tester"
+            $typeNs = __NAMESPACE__.'\Test\Test'.ucwords(strtolower($type));
+            if (!class_exists($typeNs)) {
+                $typeNs = __NAMESPACE__.'\Test\Test'.ucwords(strtolower($valueType));
+            }
+
+            if (class_exists($typeNs)) {
+                $testInstance = new $typeNs($test, $addl);
+                if ($testInstance->evaluate($propertyValue) === false) {
+                    return false;
+                }
+            } else {
+                throw new \InvalidArgumentException('Test type "'.$valueType.'" does not exist.');
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Type a few options to get the property value for evaluation
+     *
+     * @param string $type Type of check being performed
+     * @param object $subject Object to get the property value from
+     * @return mixed Either the found property value or null if not found
+     */
+    public function getPropertyValue($type, $subject)
+    {
+        $method = 'get'.ucwords(strtolower($type));
+        $propertyValue = null;
+
+        if (($type !== 'closure' && $type !== 'method') && (isset($subject->$type) || $subject->$type !== null)) {
+            $propertyValue = $subject->$type;
+        } elseif (method_exists($subject, $method)) {
+            $propertyValue = $subject->$method();
+        } elseif (method_exists($subject, 'getProperty')) {
+            $propertyValue = $subject->getProperty($type);
+        }
+
+        return $propertyValue;
     }
 }
