@@ -25,6 +25,11 @@ class Subject
         return $this->subject->$name;
     }
 
+    public function __isset($name)
+    {
+        return (isset($this->subject->$name));
+    }
+
     public function setAuth($status)
     {
         $this->authStatus = ($status == true) ? self::AUTH_STATUS_VALID : self::AUTH_STATUS_NONE;

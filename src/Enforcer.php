@@ -165,7 +165,7 @@ class Enforcer
         $method = 'get'.ucwords(strtolower($type));
         $propertyValue = null;
 
-        if (($type !== 'closure' && $type !== 'method') && (isset($subject->$type) || $subject->$type !== null)) {
+        if (($type !== 'closure' && $type !== 'method') && (isset($subject->$type) && $subject->$type !== null)) {
             $propertyValue = $subject->$type;
         } elseif (method_exists($subject, $method)) {
             $propertyValue = $subject->$method();
