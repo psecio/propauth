@@ -29,8 +29,20 @@ class Enforcer
     public function __construct(\Psecio\PropAuth\PolicySet $policySet = null)
     {
         if ($policySet !== null) {
-            $this->policySet = $policySet;
+            $this->setPolicySet($policySet);
         }
+    }
+
+    /**
+     * Set the current policy set (overrides, not appends)
+     *
+     * @param \Psecio\PropAuth\PolicySet $policySet Set of Policy objects
+     * @return \Psecio\PropAuth\Enforcer instance
+     */
+    public function setPolicySet(\Psecio\PropAuth\PolicySet $policySet)
+    {
+        $this->policySet = $policySet;
+        return $this;
     }
 
     /**
