@@ -34,6 +34,13 @@ class Policy
     ];
 
     /**
+     * Path to use for searching the data
+     *
+     * @var string
+     */
+    private $path;
+
+    /**
      * Magic method to catch policy additions on the current instance
      *
      * @param string $name Method name
@@ -52,6 +59,28 @@ class Policy
         }
 
         return $this;
+    }
+
+    /**
+     * Set the path used in the "find" operation
+     *
+     * @param string $path Path of data to search for
+     * @return \Psecio\PropAuth instance
+     */
+    public function find($path)
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * Get the current "path" setting
+     *
+     * @return string Current path string
+     */
+    public function getPath()
+    {
+        return $this->path;
     }
 
     /**

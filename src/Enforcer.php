@@ -115,10 +115,19 @@ class Enforcer
         }
 
         foreach ($checks as $type => $value) {
-            $propertyValue = $this->getPropertyValue($type, $subject);
+
+            // If there's a "path" use that to find the value(s)
+            $path = $policy->getPath();
+            if ($path !== null) {
+                $locate = $path;
+                $propertyValue = $this->resolvePath($type, $subject, $path);
+            } else {
+                $locate = $type;
+                $propertyValue = $this->getPropertyValue($type, $subject);
+            }
 
             if ($propertyValue == null && $type !== 'closure') {
-                throw new \InvalidArgumentException('Invalid property value for "'.$type.'"!');
+                throw new \InvalidArgumentException('Invalid property value for "'.$locate.'"!');
             }
 
             $result = $this->executeTests($value, $type, $propertyValue, $addl);
@@ -129,6 +138,30 @@ class Enforcer
             }
         }
         return true;
+    }
+
+    /**
+     * Resolve the provided path using a Resolver object instance
+     *
+     * @param string $type The "type" of value to look for (key name)
+     * @param mixed $subject The subject of the search
+     * @param string $path The string path to the data requested (ex: permissions.tests.name)
+     * @return array Set of results
+     */
+    public function resolvePath($type, $subject, $path)
+    {
+        $resolve = new Resolve($subject);
+        $resolvedSet = $resolve->execute($path);
+        $set = [];
+
+        if (is_array($resolvedSet)) {
+            foreach ($resolvedSet as $item) {
+                $set[] = $this->getPropertyValue($type, $item);
+            }
+        } else {
+            $set = $this->getPropertyValue($type, $subject);
+        }
+        return $set;
     }
 
     /**
