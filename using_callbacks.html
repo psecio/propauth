@@ -125,83 +125,36 @@
 
                 
                 <section class="col-sm-9 col-lg-10 content">
-                    <h1 id="installation-amp-usage">Installation &amp; Usage</h1>
-<p>Using the <code>PropAuth</code> library is simple and it can be installed along with your other dependencies with <a href="https://getcomposer.org">Composer</a>.</p>
-<h2 id="installation">Installation</h2>
-<p>You can install the library easily with Composer:</p>
-<pre><code class="language-bash">composer.phar install psecio/propauth</code></pre>
-<p>This will pull the library into your Composer <code>vendor/</code> directory. Currently the library has no other (non-dev) dependencies. If you're wanting to run the unit tests, you will need to install the <a href="https://phpunit.de/">PHPUnit</a> dev dependency with the <code>--require-dev</code> command line flag.</p>
-<h2 id="examples">Examples</h2>
+                    <h1 id="using-callbacks-in-policies">Using Callbacks in Policies</h1>
+<p>If you have some more custom logic that you need to apply, you might want to use the callback handling built into PropAuth. Much like the &quot;has&quot; and &quot;not&quot; of the property checks, there's &quot;can&quot; (result should be true) and &quot;cannot&quot; (result should be false) for callbacks. Here's an example of each:</p>
 <pre><code class="language-php">&lt;?php
-
-require_once 'vendor/autoload.php';
-
-use \Psecio\PropAuth\Enforcer;
-use \Psecio\PropAuth\Policy;
-
-$enforcer = new Enforcer();
+// Make a user
 $myUser = (object)[
     'username' =&gt; 'ccornutt',
-    'permissions' =&gt; ['test1'],
-    'password' =&gt; password_hash('test1234', PASSWORD_DEFAULT)
+    'permissions' =&gt; ['test1']
+];
+
+// Make a post
+$post = (object)[
+    'title' =&gt; 'This is a test post',
+    'id' =&gt; 1
 ];
 
 $myPolicy = new Policy();
-$myPolicy-&gt;hasUsername('ccornutt');
+$myPolicy
+    -&gt;hasUsername(['ccornutt', 'ccornutt1'], Policy::ANY)
+    -&gt;can(function($subject, $post) {
+        return ($post-&gt;id === 1);
+    })
+    -&gt;cannot(function($subject, $post) {
+        return (strpos($post-&gt;title, 'foobar') === false);
+    });
 
-$result = $enforcer-&gt;evaluate($myUser, $myPolicy);
-echo 'RESULT: '.var_export($result, true)."\n\n"; // result is true
-
-// You can also chain the evaluations to make more complex policies
-$myPolicy-&gt;hasUsername('ccornutt')-&gt;hasPermissions('test1'); // also true
-
-// There's also a static method to help make the creation more concise
-$myPolicy = Policy::instance()-&gt;hasUser('ccornutt')-&gt;hasPermissions('test1');
-
+$result = $enforcer-&gt;evaluate($myUser, $myPolicy, [ $post ]); // result is TRUE
 ?&gt;</code></pre>
 <blockquote>
-<p><strong>NOTE:</strong> All matching is treated as <em>AND</em> so <strong>all</strong> criteria must be true for the evaluation to pass.</p>
+<p><strong>NOTE:</strong> The additional parameters that are passed in to the <code>evaluate</code> method will be given to the closure check types in the same order they're given in the array. However, the first parameter will <em>always</em> be the subject (User) being evaluated.</p>
 </blockquote>
-<h2 id="allowed-user-types">Allowed User Types</h2>
-<p>The PropAuth engine tries several different ways to get information from the user instance (properties) that should accommodate most of the common User class types out there. When checking for a property, the engine will, in this order:</p>
-<ul>
-<li>Look for a public property with the given name</li>
-<li>Look for a getter with the property name (ex: for &quot;foo&quot; it looks for &quot;getFoo&quot;)</li>
-<li>Look for the &quot;getProperty&quot; method specifically and calls it with the property name</li>
-</ul>
-<p>In the first code example, we're just creating a basic class (<code>stdClass</code>) and applying public properties so it would match with the first check for public properties.</p>
-<h2 id="other-examples">Other examples</h2>
-<p><strong>All of the following examples evaluate to <code>true</code> based on the defined user.</strong></p>
-<pre><code class="language-php">&lt;?php
-
-$policy = new Policy();
-
-#### POSITIVE CHECKS
-
-// Check to see if the permission is in a set
-$user = new User([
-    'permissions' =&gt; ['test1', 'test2']
-]);
-$policy-&gt;hasPermissions('test1');
-
-// Check to see if any permissions match
-$policy-&gt;hasPermissions(['test3', 'test2', 'test5'], Policy::ANY);
-
-// Check to see that the permissions match exactly
-$policy-&gt;hasPermissions(['test1', 'test2'], Policy::ALL);
-
-#### NEGATIVE CHECKS
-
-// Check to see if the permission is NOT in the set
-$policy-&gt;notPermissions('test5');
-
-// Check to see if NONE of the permissions match
-$policy-&gt;notPermissions(['test3', 'test5', 'test6'], Policy::ANY);
-
-// Check to see if the permissions are NOT equal
-$policy-&gt;notPermissions(['test4', 'test5'], Policy::ALL);
-?&gt;
-</code></pre>
                 </section>
 
             </div>

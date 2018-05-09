@@ -125,83 +125,29 @@
 
                 
                 <section class="col-sm-9 col-lg-10 content">
-                    <h1 id="installation-amp-usage">Installation &amp; Usage</h1>
-<p>Using the <code>PropAuth</code> library is simple and it can be installed along with your other dependencies with <a href="https://getcomposer.org">Composer</a>.</p>
-<h2 id="installation">Installation</h2>
-<p>You can install the library easily with Composer:</p>
-<pre><code class="language-bash">composer.phar install psecio/propauth</code></pre>
-<p>This will pull the library into your Composer <code>vendor/</code> directory. Currently the library has no other (non-dev) dependencies. If you're wanting to run the unit tests, you will need to install the <a href="https://phpunit.de/">PHPUnit</a> dev dependency with the <code>--require-dev</code> command line flag.</p>
-<h2 id="examples">Examples</h2>
-<pre><code class="language-php">&lt;?php
-
-require_once 'vendor/autoload.php';
-
-use \Psecio\PropAuth\Enforcer;
-use \Psecio\PropAuth\Policy;
-
-$enforcer = new Enforcer();
-$myUser = (object)[
-    'username' =&gt; 'ccornutt',
-    'permissions' =&gt; ['test1'],
-    'password' =&gt; password_hash('test1234', PASSWORD_DEFAULT)
-];
-
-$myPolicy = new Policy();
-$myPolicy-&gt;hasUsername('ccornutt');
-
-$result = $enforcer-&gt;evaluate($myUser, $myPolicy);
-echo 'RESULT: '.var_export($result, true)."\n\n"; // result is true
-
-// You can also chain the evaluations to make more complex policies
-$myPolicy-&gt;hasUsername('ccornutt')-&gt;hasPermissions('test1'); // also true
-
-// There's also a static method to help make the creation more concise
-$myPolicy = Policy::instance()-&gt;hasUser('ccornutt')-&gt;hasPermissions('test1');
-
-?&gt;</code></pre>
-<blockquote>
-<p><strong>NOTE:</strong> All matching is treated as <em>AND</em> so <strong>all</strong> criteria must be true for the evaluation to pass.</p>
-</blockquote>
-<h2 id="allowed-user-types">Allowed User Types</h2>
-<p>The PropAuth engine tries several different ways to get information from the user instance (properties) that should accommodate most of the common User class types out there. When checking for a property, the engine will, in this order:</p>
+                    <h1 id="loading-policies-from-an-external-source">Loading Policies from an External Source</h1>
+<p>Defining policies in your code is good, but sometimes it just makes more sense to have them in an external location where you can load them as needed. Maybe you have a situation where only &quot;Post&quot; related policies need to be loaded and not everything across the entire site. <code>PropAuth</code> offers a &quot;load DSL&quot; method on the <code>Policy</code> class that can help here.</p>
+<p>What's a DSL? A &quot;domain specific language&quot; lets you define a string in a certain format where <code>PropAuth</code> will understand how to parse it and create a policy instance from it. Let's start with an example and then break down the format:</p>
+<pre><code>hasUsername:ccornutt||notUsername:ccornutt1||hasPermissions:(test1,test2)[ANY]</code></pre>
+<p>You'll notice that there's similarities in the method names you'd call if you were making the policy yourself and what the DSL will recognize (like <code>hasUsername</code>). This DSL string defines the following policy:</p>
 <ul>
-<li>Look for a public property with the given name</li>
-<li>Look for a getter with the property name (ex: for &quot;foo&quot; it looks for &quot;getFoo&quot;)</li>
-<li>Look for the &quot;getProperty&quot; method specifically and calls it with the property name</li>
+<li>subject has the username of &quot;ccornutt&quot;</li>
+<li>subject does not have the username of &quot;ccornutt1&quot;</li>
+<li>subject has any of the following permissions: test1, test2</li>
 </ul>
-<p>In the first code example, we're just creating a basic class (<code>stdClass</code>) and applying public properties so it would match with the first check for public properties.</p>
-<h2 id="other-examples">Other examples</h2>
-<p><strong>All of the following examples evaluate to <code>true</code> based on the defined user.</strong></p>
+<p>The logic is the same as if you were manually setting those methods on the policy object, just in a simplified way. Here's how it looks in code:</p>
 <pre><code class="language-php">&lt;?php
-
-$policy = new Policy();
-
-#### POSITIVE CHECKS
-
-// Check to see if the permission is in a set
-$user = new User([
-    'permissions' =&gt; ['test1', 'test2']
-]);
-$policy-&gt;hasPermissions('test1');
-
-// Check to see if any permissions match
-$policy-&gt;hasPermissions(['test3', 'test2', 'test5'], Policy::ANY);
-
-// Check to see that the permissions match exactly
-$policy-&gt;hasPermissions(['test1', 'test2'], Policy::ALL);
-
-#### NEGATIVE CHECKS
-
-// Check to see if the permission is NOT in the set
-$policy-&gt;notPermissions('test5');
-
-// Check to see if NONE of the permissions match
-$policy-&gt;notPermissions(['test3', 'test5', 'test6'], Policy::ANY);
-
-// Check to see if the permissions are NOT equal
-$policy-&gt;notPermissions(['test4', 'test5'], Policy::ALL);
-?&gt;
-</code></pre>
+$dsl = 'hasUsername:ccornutt||notUsername:ccornutt1||hasPermissions:(test1,test2)[ANY]';
+$myPolicy = Policy::load($dsl);
+?&gt;</code></pre>
+<p>Simple right? Okay, so lets look at the format:</p>
+<ul>
+<li>the method/value pairs are split by the double pipe (<code>||</code>)</li>
+<li>the method name and value are then split by a colon (<code>:</code>)</li>
+<li>single string values are just put into the string, arrays are surrounded by parentheses and split with a comma</li>
+<li>modifiers (like <code>ANY</code> or <code>ALL</code>) are added to the end of the method/value pair, enclosed in brackets (<code>[]</code>)</li>
+</ul>
+<p>Obviously this is only really for simpler checks where the criteria can be defined by strings and simple values, but it can be quite useful for a wide range of circumstances. Of course, you can always pull these as base policies and then add on to them manually once you have the <code>Policy</code> object created post-load.</p>
                 </section>
 
             </div>

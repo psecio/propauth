@@ -125,83 +125,86 @@
 
                 
                 <section class="col-sm-9 col-lg-10 content">
-                    <h1 id="installation-amp-usage">Installation &amp; Usage</h1>
-<p>Using the <code>PropAuth</code> library is simple and it can be installed along with your other dependencies with <a href="https://getcomposer.org">Composer</a>.</p>
-<h2 id="installation">Installation</h2>
-<p>You can install the library easily with Composer:</p>
-<pre><code class="language-bash">composer.phar install psecio/propauth</code></pre>
-<p>This will pull the library into your Composer <code>vendor/</code> directory. Currently the library has no other (non-dev) dependencies. If you're wanting to run the unit tests, you will need to install the <a href="https://phpunit.de/">PHPUnit</a> dev dependency with the <code>--require-dev</code> command line flag.</p>
-<h2 id="examples">Examples</h2>
+                    <h1 id="using-the-gateway-interface-for-evaluation">Using the Gateway interface for evaluation</h1>
+<p>In addition to the powerful features already listed here, the <code>PropAuth</code> library also provides a simplified interface for working with your user (subject) and its authentication and authorization.</p>
+<p>First, let's take a look at authentication. It uses a <code>bcrypt</code> hashing method behind the scenes to evaluate the password:</p>
 <pre><code class="language-php">&lt;?php
-
-require_once 'vendor/autoload.php';
-
-use \Psecio\PropAuth\Enforcer;
-use \Psecio\PropAuth\Policy;
-
-$enforcer = new Enforcer();
 $myUser = (object)[
     'username' =&gt; 'ccornutt',
-    'permissions' =&gt; ['test1'],
     'password' =&gt; password_hash('test1234', PASSWORD_DEFAULT)
 ];
 
-$myPolicy = new Policy();
-$myPolicy-&gt;hasUsername('ccornutt');
+$gate = new Gateway($myUser);
+$subject = $gate-&gt;authenticate($password);
 
-$result = $enforcer-&gt;evaluate($myUser, $myPolicy);
-echo 'RESULT: '.var_export($result, true)."\n\n"; // result is true
-
-// You can also chain the evaluations to make more complex policies
-$myPolicy-&gt;hasUsername('ccornutt')-&gt;hasPermissions('test1'); // also true
-
-// There's also a static method to help make the creation more concise
-$myPolicy = Policy::instance()-&gt;hasUser('ccornutt')-&gt;hasPermissions('test1');
+// Then we can check if the user is authenticated
+echo 'Is authenticated? '.var_export($subject-&gt;isAuthed(), true)."\n";
 
 ?&gt;</code></pre>
-<blockquote>
-<p><strong>NOTE:</strong> All matching is treated as <em>AND</em> so <strong>all</strong> criteria must be true for the evaluation to pass.</p>
-</blockquote>
-<h2 id="allowed-user-types">Allowed User Types</h2>
-<p>The PropAuth engine tries several different ways to get information from the user instance (properties) that should accommodate most of the common User class types out there. When checking for a property, the engine will, in this order:</p>
-<ul>
-<li>Look for a public property with the given name</li>
-<li>Look for a getter with the property name (ex: for &quot;foo&quot; it looks for &quot;getFoo&quot;)</li>
-<li>Look for the &quot;getProperty&quot; method specifically and calls it with the property name</li>
-</ul>
-<p>In the first code example, we're just creating a basic class (<code>stdClass</code>) and applying public properties so it would match with the first check for public properties.</p>
-<h2 id="other-examples">Other examples</h2>
-<p><strong>All of the following examples evaluate to <code>true</code> based on the defined user.</strong></p>
+<p>We create the <code>Gateway</code> class instance and then can call the <code>authenticate</code> method on it with the password provided. The script then assumes it can access the user's <code>password</code> property as a value on the object and makes a comparison. It will return a new instance of a <code>Subject</code> class if the authentication is successful or <code>false</code> if not. The <code>Subject</code> class is just a wrapper around your object (<code>$myUser</code> in this case). The original object can be fetched using the <code>Subject-&gt;getSubject()</code> method.</p>
+<p>Additionally, you can provide a bit more context and use the <code>Gateway</code> interface for policy evaluation too. You simply define the policies as a part of the <code>Context</code> object in the constructor:</p>
 <pre><code class="language-php">&lt;?php
-
-$policy = new Policy();
-
-#### POSITIVE CHECKS
-
-// Check to see if the permission is in a set
-$user = new User([
-    'permissions' =&gt; ['test1', 'test2']
+$context = new Context([
+    'policies' =&gt; [
+        'policy1' =&gt; Policy::instance()-&gt;hasUsername('ccornutt')
+    ]
 ]);
-$policy-&gt;hasPermissions('test1');
+$gate = new Gateway($myUser, $context);
 
-// Check to see if any permissions match
-$policy-&gt;hasPermissions(['test3', 'test2', 'test5'], Policy::ANY);
+// When we can call the "evaluate" method with the policies we want to check:
+if ($gate-&gt;evaluate('policy1') === true) {
+    echo 'Policy1 passes!';
+}
 
-// Check to see that the permissions match exactly
-$policy-&gt;hasPermissions(['test1', 'test2'], Policy::ALL);
+// Or you can just add your own PolicySet instance and use "evaluate" the same way
+$myPolicySet = new PolicySet()-&gt;add('edit-post', Policy::instance()-&gt;hasUsername('testuser1'));
 
-#### NEGATIVE CHECKS
+$context = new Context([
+    'policies' =&gt; $myPolicySet
+]);
 
-// Check to see if the permission is NOT in the set
-$policy-&gt;notPermissions('test5');
+?&gt;</code></pre>
+<p>Once you have your valid <code>Subject</code> instance, you can then check its abilities with the <code>can</code> and <code>cannot</code> methods:</p>
+<pre><code class="language-php">&lt;?php
+$myUser = (object)[
+    'username' =&gt; 'ccornutt',
+    'password' =&gt; password_hash('test1234', PASSWORD_DEFAULT)
+];
 
-// Check to see if NONE of the permissions match
-$policy-&gt;notPermissions(['test3', 'test5', 'test6'], Policy::ANY);
+$context = new Context([
+    'policies' =&gt; [
+        'policy1' =&gt; Policy::instance()-&gt;hasUsername('ccornutt')
+    ]
+]);
 
-// Check to see if the permissions are NOT equal
-$policy-&gt;notPermissions(['test4', 'test5'], Policy::ALL);
-?&gt;
-</code></pre>
+$gate = new Gateway($myUser, $context);
+$subject = $gate-&gt;authenticate($password);
+
+if ($subject !== false &amp;&amp; $subject-&gt;can('policy1') === true) {
+    echo 'They can, woo!';
+}
+
+?&gt;</code></pre>
+<p>The parameter on the <code>can</code> and <code>cannot</code> methods are policy names you've already defined in your context. If the <code>Policy</code> is defined as a closure with more complex logic, you can provide this option (or multiple options) as the second parameter:</p>
+<pre><code class="language-php">&lt;?php
+$post = (object)[
+    'author' =&gt; 'ccornutt'
+];
+$set = PolicySet::instance()-&gt;add(
+    'delete',
+    Policy::instance()-&gt;can(function($subject, $post) {
+        return ($subject-&gt;username == 'ccornutt' &amp;&amp; $post-&gt;author == 'ccornutt');
+    })
+);
+$context = new Context(['policies' =&gt; $set]);
+$gate = new Gateway($myUser, $context);
+
+$subject = $gate-&gt;authenticate('test1234');
+
+if ($subject-&gt;can('delete', $post) === true) {
+    echo 'They can delete it!';
+}
+?&gt;</code></pre>
                 </section>
 
             </div>
