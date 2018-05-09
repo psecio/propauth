@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>PropAuth</title>
+
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/highlight.dark.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <header class="navbar navbar-default navbar-fixed-top">
+
+            <a class="navbar-brand" href="/">
+                PropAuth
+                <small class="hidden-xs hidden-sm">
+                    Property-based policy evaluation
+                </small>
+            </a>
+
+            
+        </header>
+
+        <main class="container-fluid">
+            <div class="row">
+
+                
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                        <ul class="nav nav-pills nav-stacked">
+                                                            <li class="">
+                                    <a href="/about.html">
+                                        About the Project
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="terms.html">
+                                        Terms
+                                    </a>
+                                </li>
+                                                    </ul>
+
+                    </nav>
+
+                
+                <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <h1 id="introduction">Introduction</h1>
+<p>Performing evaluations on credentials for authentication or sets of permissions on users has its limitations. With these things you're restricted to evaluations like &quot;has permission&quot; or &quot;credentials invalid&quot;. The goal behind PropAuth is to make these evaluations much more flexible and allow you to define reusable <a href="/terms.html#policy">policies</a> that can be evaluated against the provided user dynamically.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="installation">Installation</h3>
+<p>You can install PropAuth via <a href="https://getcomposer.org">Composer</a>:</p>
+<pre><code class="language-sh">php composer.phar install psecio/propauth</code></pre>
+<h3 id="example-usage">Example Usage</h3>
+<p>The following example sets up the <code>Enforcer</code> object and a <code>$myUser</code> object and uses the library to check and see if the user has a <code>username</code> property equal to &quot;ccornutt&quot;:</p>
+<pre><code class="language-php">&lt;?php
+
+require_once 'vendor/autoload.php';
+
+use \Psecio\PropAuth\Enforcer;
+use \Psecio\PropAuth\Policy;
+
+$enforcer = new Enforcer();
+$myUser = (object)[
+    'username' =&gt; 'ccornutt',
+    'permissions' =&gt; ['test1'],
+    'password' =&gt; password_hash('test1234', PASSWORD_DEFAULT)
+];
+
+$myPolicy = new Policy();
+$myPolicy-&gt;hasUsername('ccornutt');
+
+$result = $enforcer-&gt;evaluate($myUser, $myPolicy);
+echo 'RESULT: '.var_export($result, true)."\n\n"; // result is true
+
+?&gt;
+</code></pre>
+                </section>
+
+            </div>
+        </main>
+
+        <footer>
+            <div class="container-fluid">
+                <p class="text-muted">
+                    website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="//yastatic.net/highlightjs/8.2/highlight.min.js"></script>
+
+        <script>
+            $(function() {
+                $("section>h1").wrap('<div class="page-header" />');
+                // Syntax highlighting
+                hljs.initHighlightingOnLoad();
+            });
+        </script>
+
+    </body>
+</html>

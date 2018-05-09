@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>PropAuth</title>
+
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/highlight.dark.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <header class="navbar navbar-default navbar-fixed-top">
+
+            <a class="navbar-brand" href="/">
+                PropAuth
+                <small class="hidden-xs hidden-sm">
+                    Property-based policy evaluation
+                </small>
+            </a>
+
+            
+        </header>
+
+        <main class="container-fluid">
+            <div class="row">
+
+                
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                        <ul class="nav nav-pills nav-stacked">
+                                                            <li class="">
+                                    <a href="/about.html">
+                                        About the Project
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="terms.html">
+                                        Terms
+                                    </a>
+                                </li>
+                                                    </ul>
+
+                    </nav>
+
+                
+                <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <h1 id="installation-amp-basic-usage">Installation &amp; Basic Usage</h1>
+<h2 id="installation">Installation</h2>
+<p>You can install the library easily with Composer:</p>
+<pre><code class="language-bash">composer.phar install psecio/propauth</code></pre>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-php">&lt;?php
+
+require_once 'vendor/autoload.php';
+
+use \Psecio\PropAuth\Enforcer;
+use \Psecio\PropAuth\Policy;
+
+$enforcer = new Enforcer();
+$myUser = (object)[
+    'username' =&gt; 'ccornutt',
+    'permissions' =&gt; ['test1'],
+    'password' =&gt; password_hash('test1234', PASSWORD_DEFAULT)
+];
+
+$myPolicy = new Policy();
+$myPolicy-&gt;hasUsername('ccornutt');
+
+$result = $enforcer-&gt;evaluate($myUser, $myPolicy);
+echo 'RESULT: '.var_export($result, true)."\n\n"; // result is true
+
+// You can also chain the evaluations to make more complex policies
+$myPolicy-&gt;hasUsername('ccornutt')-&gt;hasPermissions('test1'); // also true
+
+// There's also a static method to help make the creation more concise
+$myPolicy = Policy::instance()-&gt;hasUser('ccornutt')-&gt;hasPermissions('test1');
+
+?&gt;</code></pre>
+<blockquote>
+<p><strong>NOTE:</strong> All matching is treated as <em>AND</em> so <strong>all</strong> criteria must be true for the evaluation to pass.</p>
+</blockquote>
+<h2 id="allowed-user-types">Allowed User Types</h2>
+<p>The PropAuth engine tries several different ways to get information from the user instance (properties) that should accommodate most of the common User class types out there. When checking for a property, the engine will, in this order:</p>
+<ul>
+<li>Look for a public property with the given name</li>
+<li>Look for a getter with the property name (ex: for &quot;foo&quot; it looks for &quot;getFoo&quot;)</li>
+<li>Look for the &quot;getProperty&quot; method specifically and calls it with the property name</li>
+</ul>
+<p>In the first code example, we're just creating a basic class (<code>stdClass</code>) and applying public properties so it would match with the first check for public properties.</p>
+                </section>
+
+            </div>
+        </main>
+
+        <footer>
+            <div class="container-fluid">
+                <p class="text-muted">
+                    website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="//yastatic.net/highlightjs/8.2/highlight.min.js"></script>
+
+        <script>
+            $(function() {
+                $("section>h1").wrap('<div class="page-header" />');
+                // Syntax highlighting
+                hljs.initHighlightingOnLoad();
+            });
+        </script>
+
+    </body>
+</html>

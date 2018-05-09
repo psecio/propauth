@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>PropAuth</title>
+
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/highlight.dark.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <header class="navbar navbar-default navbar-fixed-top">
+
+            <a class="navbar-brand" href="/">
+                PropAuth
+                <small class="hidden-xs hidden-sm">
+                    Property-based policy evaluation
+                </small>
+            </a>
+
+            
+        </header>
+
+        <main class="container-fluid">
+            <div class="row">
+
+                
+                    <nav id="sidebar" class="col-sm-3 col-lg-2" role="navigation">
+
+                        <ul class="nav nav-pills nav-stacked">
+                                                            <li class="">
+                                    <a href="/about.html">
+                                        About the Project
+                                    </a>
+                                </li>
+                                                            <li class="">
+                                    <a href="terms.html">
+                                        Terms
+                                    </a>
+                                </li>
+                                                    </ul>
+
+                    </nav>
+
+                
+                <section id="content" class="col-sm-offset-3 col-lg-offset-2 col-sm-9 col-lg-10">
+                    <h1 id="common-terms">Common Terms</h1>
+<h2 id="policy">Policy</h2>
+<p><a name="policy"></a></p>
+<p>A <strong>policy</strong> is a set of tests that can be run against data. In PropAuth, these policies are created using the <code>Policy</code> object. One or many checks are then appended to the <code>Policy</code> instance. </p>
+<p>For example, a policy that checks values for a user's first and last name my have the checks:</p>
+<ol>
+<li>Has first name equal to &quot;Chris&quot;</li>
+<li>Has last name equal to &quot;Cornutt&quot;</li>
+</ol>
+<p>In PropAuth these tests are referred to as &quot;checks&quot;.</p>
+<h2 id="policy-set">Policy Set</h2>
+<p><a name="policyset"></a></p>
+<p>A <strong>policy set</strong> is pretty much what it sounds like: a set of <code>Policy</code> instances. Creating a policy set allows for easier grouping of multiple policies to make policies more reusable across the application.</p>
+<h2 id="enforcer">Enforcer</h2>
+<p><a name="enforcer"></a></p>
+<p>The <strong>enforcer</strong> is the main entry point for the evaluation. It takes in the policy/policies to evaluate and the <a href="#subject">subject</a> to match those policies against. It then returns a simple <code>pass</code> or <code>fail</code> status as a result of the evaluation.</p>
+<h2 id="resolver">Resolver</h2>
+<p><a name="resolver"></a></p>
+<p>The <strong>resolver</strong> is used when a &quot;path&quot; is provided to the <a href="#policy">policy</a> to locate nested data without having to track it down yourself. For example, the path <code>permissions.tests</code> could refer to the <code>tests</code> property on each of the items in the <a href="#subject">subject</a>'s <code>permissions</code> values.</p>
+<h2 id="subject">Subject</h2>
+<p><a name="subject"></a></p>
+<p>The <strong>subject</strong> is the target of the evaluation. This could be an object or an array of data. It's passed into the <a href="#enforcer">enforcer</a> at evaluation time and the checks are then run against it.</p>
+<h2 id="context">Context</h2>
+<p>The <strong>context</strong> is the environment the evaluation lives in. The context could include the environemnt for the request, the resource being requested, or other related information.</p>
+                </section>
+
+            </div>
+        </main>
+
+        <footer>
+            <div class="container-fluid">
+                <p class="text-muted">
+                    website generated with <a href="http://couscous.io" title="Markdown website generator">Couscous</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="//yastatic.net/highlightjs/8.2/highlight.min.js"></script>
+
+        <script>
+            $(function() {
+                $("section>h1").wrap('<div class="page-header" />');
+                // Syntax highlighting
+                hljs.initHighlightingOnLoad();
+            });
+        </script>
+
+    </body>
+</html>
