@@ -1,3 +1,3 @@
-# PropAuth: Property-based policy evaluation
+# Introduction
 
 Performing evaluations on credentials for authentication or sets of permissions on users has its limitations. With these things you're restricted to evaluations like "has permission" or "credentials invalid". The goal behind `PropAuth` is to make these evaluations much more flexible and allow you to define reusable *policies* that can be evaluated against the provided user dynamically.
