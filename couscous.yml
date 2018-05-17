@@ -1,0 +1,63 @@
+include:
+  - docs
+
+title: PropAuth
+subTitle: Property-based policy evaluation
+fontAwesomeIcon: fa fa-gear
+
+github:
+  user: psecio
+  repo: propauth
+
+menu:
+  sections:
+    main:
+      name: General
+      items:
+        home:
+          text: About the Project
+          relativeUrl: about.html
+        install_usage:
+          text: Intallation & Basic Usage
+          absoluteUrl: install_usage.html
+        terms:
+          text: Common Terms
+          absoluteUrl: terms.html
+    policies:
+      name: Policies
+      items:
+        using_callbacks:
+          text: Using Callbacks in Policies
+          absoluteUrl: using_callbacks.html
+        policy_set:
+          text: Policy Sets
+          absoluteUrl: policy_set.html
+        class_method:
+          text: Using a Class & Method for Evaluation
+          absoluteUrl: class_method.html
+        load_external:
+          text: Loading Policies from an External Source
+          absoluteUrl: load_external.html
+    execution:
+      name: Performing Evaluations
+      items:
+        how_checks:
+          text: How it checks properties
+          absoluteUrl: how_checks.html
+        path_search:
+          text: Searching by "path"
+          absoluteUrl: search_by_path.html
+    other:
+      name: Other
+      items:
+        password_verify:
+          text: Password Verification
+          absoluteUrl: password_verify.html
+        using_gateway:
+          text: Using the Gateway interface for evaluation
+          absoluteUrl: using_gateway.html
+
+baseUrl: https://psecio.github.io/propauth
+
+template:
+    url: https://github.com/pnowy/CouscousNativeTemplate
