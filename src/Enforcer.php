@@ -126,7 +126,7 @@ class Enforcer
                 $propertyValue = $this->getPropertyValue($type, $subject);
             }
 
-            if ($propertyValue == null && $type !== 'closure') {
+            if ($propertyValue === null && $type !== 'closure') {
                 throw new \InvalidArgumentException('Invalid property value for "'.$locate.'"!');
             }
 
